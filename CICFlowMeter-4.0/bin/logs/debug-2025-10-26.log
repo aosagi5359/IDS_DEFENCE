@@ -1,0 +1,275 @@
+2025-10-26 14:11:49 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141148.pcap
+2025-10-26 14:11:49 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:11:49 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:11:49 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141148.pcap
+2025-10-26 14:11:54 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141152.pcap
+2025-10-26 14:11:54 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:11:55 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:11:55 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141152.pcap
+2025-10-26 14:12:02 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141202.pcap
+2025-10-26 14:12:02 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:12:02 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:12:03 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 17 flow
+2025-10-26 14:12:03 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 17 flow
+2025-10-26 14:12:03 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141202.pcap
+2025-10-26 14:12:08 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141207.pcap
+2025-10-26 14:12:08 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:12:08 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:12:08 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141207.pcap
+2025-10-26 14:12:11 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141210.pcap
+2025-10-26 14:12:11 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:12:11 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:12:11 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 6 flow
+2025-10-26 14:12:11 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141210.pcap
+2025-10-26 14:12:14 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141213.pcap
+2025-10-26 14:12:14 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:12:14 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:12:14 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141213.pcap
+2025-10-26 14:12:20 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141220.pcap
+2025-10-26 14:12:20 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:12:20 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:12:20 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 3 flow
+2025-10-26 14:12:20 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 3 flow
+2025-10-26 14:12:20 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141220.pcap
+2025-10-26 14:12:29 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141228.pcap
+2025-10-26 14:12:29 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:12:29 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:12:29 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141228.pcap
+2025-10-26 14:12:32 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141232.pcap
+2025-10-26 14:12:32 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:12:32 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:12:33 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:12:33 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:12:33 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141232.pcap
+2025-10-26 14:12:38 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141237.pcap
+2025-10-26 14:12:38 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:12:38 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:12:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 5 flow
+2025-10-26 14:12:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 4 flow
+2025-10-26 14:12:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 5 flow
+2025-10-26 14:12:38 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141237.pcap
+2025-10-26 14:12:43 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141243.pcap
+2025-10-26 14:12:43 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:12:44 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:12:44 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141243.pcap
+2025-10-26 14:12:59 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141258.pcap
+2025-10-26 14:12:59 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:12:59 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:12:59 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141258.pcap
+2025-10-26 14:13:01 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141300.pcap
+2025-10-26 14:13:01 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:13:01 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:13:01 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141300.pcap
+2025-10-26 14:13:07 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141306.pcap
+2025-10-26 14:13:07 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:13:07 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:13:07 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141306.pcap
+2025-10-26 14:13:09 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141309.pcap
+2025-10-26 14:13:09 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:13:09 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:13:09 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141309.pcap
+2025-10-26 14:13:22 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141321.pcap
+2025-10-26 14:13:22 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:13:23 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:13:23 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141321.pcap
+2025-10-26 14:13:32 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141330.pcap
+2025-10-26 14:13:32 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:13:32 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:13:33 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 10 flow
+2025-10-26 14:13:33 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9 flow
+2025-10-26 14:13:33 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141330.pcap
+2025-10-26 14:13:43 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141343.pcap
+2025-10-26 14:13:43 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:13:44 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:13:44 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141343.pcap
+2025-10-26 14:13:45 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141345.pcap
+2025-10-26 14:13:45 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:13:45 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:13:45 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141345.pcap
+2025-10-26 14:13:50 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141349.pcap
+2025-10-26 14:13:50 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:13:50 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:13:50 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141349.pcap
+2025-10-26 14:14:13 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141412.pcap
+2025-10-26 14:14:13 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:14:13 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:14:13 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141412.pcap
+2025-10-26 14:14:29 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141429.pcap
+2025-10-26 14:14:29 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:14:30 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:14:30 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141429.pcap
+2025-10-26 14:14:32 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141431.pcap
+2025-10-26 14:14:32 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:14:32 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:14:32 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141431.pcap
+2025-10-26 14:14:37 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141437.pcap
+2025-10-26 14:14:37 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:14:37 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:14:38 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141437.pcap
+2025-10-26 14:14:40 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141439.pcap
+2025-10-26 14:14:40 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:14:40 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:14:40 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141439.pcap
+2025-10-26 14:14:42 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141441.pcap
+2025-10-26 14:14:42 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:14:42 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:14:42 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141441.pcap
+2025-10-26 14:14:43 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141443.pcap
+2025-10-26 14:14:43 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:14:43 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:14:43 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141443.pcap
+2025-10-26 14:14:45 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141445.pcap
+2025-10-26 14:14:45 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:14:45 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:14:46 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141445.pcap
+2025-10-26 14:14:47 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141446.pcap
+2025-10-26 14:14:47 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:14:47 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:14:47 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 2 flow
+2025-10-26 14:14:47 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 2 flow
+2025-10-26 14:14:47 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141446.pcap
+2025-10-26 14:14:49 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141448.pcap
+2025-10-26 14:14:49 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:14:49 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:14:49 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:14:49 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141448.pcap
+2025-10-26 14:14:51 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141450.pcap
+2025-10-26 14:14:51 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:14:51 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:14:51 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:14:51 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 2 flow
+2025-10-26 14:14:51 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141450.pcap
+2025-10-26 14:14:53 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141452.pcap
+2025-10-26 14:14:53 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:14:53 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:14:53 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141452.pcap
+2025-10-26 14:14:55 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141455.pcap
+2025-10-26 14:14:55 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:14:55 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:14:56 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141455.pcap
+2025-10-26 14:14:59 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141458.pcap
+2025-10-26 14:14:59 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:14:59 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:14:59 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 3 flow
+2025-10-26 14:14:59 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 3 flow
+2025-10-26 14:14:59 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141458.pcap
+2025-10-26 14:15:10 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141510.pcap
+2025-10-26 14:15:10 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:15:10 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:15:10 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:15:10 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:15:10 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 2 flow
+2025-10-26 14:15:10 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 2 flow
+2025-10-26 14:15:10 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141510.pcap
+2025-10-26 14:15:13 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141512.pcap
+2025-10-26 14:15:13 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:15:13 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:15:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:15:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:15:13 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141512.pcap
+2025-10-26 14:15:19 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141519.pcap
+2025-10-26 14:15:19 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:15:20 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:15:20 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141519.pcap
+2025-10-26 14:15:23 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141522.pcap
+2025-10-26 14:15:23 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:15:23 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:15:23 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141522.pcap
+2025-10-26 14:15:35 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141535.pcap
+2025-10-26 14:15:35 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:15:36 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:15:36 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141535.pcap
+2025-10-26 14:15:41 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141541.pcap
+2025-10-26 14:15:41 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:15:41 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:15:41 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141541.pcap
+2025-10-26 14:16:12 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141612.pcap
+2025-10-26 14:16:12 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:16:13 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:16:13 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141612.pcap
+2025-10-26 14:16:16 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141616.pcap
+2025-10-26 14:16:16 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:16:16 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:16:16 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 5 flow
+2025-10-26 14:16:16 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 5 flow
+2025-10-26 14:16:16 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 5 flow
+2025-10-26 14:16:16 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141616.pcap
+2025-10-26 14:16:33 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141633.pcap
+2025-10-26 14:16:33 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:16:34 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:16:34 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:16:34 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:16:34 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 2 flow
+2025-10-26 14:16:34 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:16:34 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:16:34 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 2 flow
+2025-10-26 14:16:34 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141633.pcap
+2025-10-26 14:16:35 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141635.pcap
+2025-10-26 14:16:35 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:16:35 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:16:35 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:16:36 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:16:36 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:16:36 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141635.pcap
+2025-10-26 14:16:39 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141639.pcap
+2025-10-26 14:16:39 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:16:39 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:16:39 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141639.pcap
+2025-10-26 14:16:40 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141640.pcap
+2025-10-26 14:16:40 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:16:41 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:16:41 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141640.pcap
+2025-10-26 14:16:47 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141647.pcap
+2025-10-26 14:16:47 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:16:47 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:16:47 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141647.pcap
+2025-10-26 14:16:53 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141652.pcap
+2025-10-26 14:16:53 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:16:53 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:16:53 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141652.pcap
+2025-10-26 14:16:55 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141655.pcap
+2025-10-26 14:16:55 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:16:55 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:16:56 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141655.pcap
+2025-10-26 14:17:05 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141705.pcap
+2025-10-26 14:17:05 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:17:05 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:17:05 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141705.pcap
+2025-10-26 14:17:11 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141711.pcap
+2025-10-26 14:17:11 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:17:11 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:17:12 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141711.pcap
+2025-10-26 14:17:14 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141713.pcap
+2025-10-26 14:17:14 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:17:14 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:17:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:17:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:17:14 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141713.pcap
+2025-10-26 14:17:15 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141715.pcap
+2025-10-26 14:17:15 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:17:16 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:17:16 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141715.pcap
+2025-10-26 14:17:17 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141716.pcap
+2025-10-26 14:17:17 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:17:17 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:17:17 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141716.pcap
+2025-10-26 14:17:21 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141720.pcap
+2025-10-26 14:17:21 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:17:21 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:17:22 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141720.pcap
+2025-10-26 14:17:26 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141726.pcap
+2025-10-26 14:17:26 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:17:27 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:17:27 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141726.pcap
+2025-10-26 14:17:38 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141737.pcap
+2025-10-26 14:17:38 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:17:38 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:17:39 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141737.pcap
+2025-10-26 14:17:40 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\pcaps\flow_20251026_141739.pcap
+2025-10-26 14:17:40 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\csvs
+2025-10-26 14:17:40 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-26 14:17:40 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:17:40 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:17:40 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:17:40 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 1 flow
+2025-10-26 14:17:40 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\pcaps\flow_20251026_141739.pcap

@@ -1,0 +1,342 @@
+2025-10-09 00:00:22 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_000022.pcap
+2025-10-09 00:00:22 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:00:22 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:00:23 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_000022.pcap
+2025-10-09 00:00:24 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_000024.pcap
+2025-10-09 00:00:24 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:00:25 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:00:25 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_000024.pcap
+2025-10-09 00:00:26 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_000026.pcap
+2025-10-09 00:00:26 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:00:27 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:00:27 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_000026.pcap
+2025-10-09 00:00:28 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_000028.pcap
+2025-10-09 00:00:28 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:00:29 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:00:29 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_000028.pcap
+2025-10-09 00:00:30 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_000030.pcap
+2025-10-09 00:00:30 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:00:31 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:00:31 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_000030.pcap
+2025-10-09 00:31:24 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_003123.pcap
+2025-10-09 00:31:24 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:31:25 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:31:25 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 30 flow
+2025-10-09 00:31:25 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 40 flow
+2025-10-09 00:31:25 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 39 flow
+2025-10-09 00:31:25 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 38 flow
+2025-10-09 00:31:25 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 68 flow
+2025-10-09 00:31:25 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 71 flow
+2025-10-09 00:31:25 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 71 flow
+2025-10-09 00:31:25 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_003123.pcap
+2025-10-09 00:31:39 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_003139.pcap
+2025-10-09 00:31:39 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:31:40 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:31:40 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_003139.pcap
+2025-10-09 00:32:53 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_003252.pcap
+2025-10-09 00:32:53 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:32:54 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:32:54 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_003252.pcap
+2025-10-09 00:33:13 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_003312.pcap
+2025-10-09 00:33:13 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:33:13 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:33:13 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_003312.pcap
+2025-10-09 00:38:30 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_003830.pcap
+2025-10-09 00:38:30 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:38:31 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:38:31 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_003830.pcap
+2025-10-09 00:41:01 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_004101.pcap
+2025-10-09 00:41:01 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:41:02 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:41:02 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_004101.pcap
+2025-10-09 00:41:22 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_004121.pcap
+2025-10-09 00:41:22 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:41:23 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:41:23 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_004121.pcap
+2025-10-09 00:41:25 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_004125.pcap
+2025-10-09 00:41:25 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:41:26 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:41:26 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_004125.pcap
+2025-10-09 00:41:49 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_004148.pcap
+2025-10-09 00:41:49 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:41:49 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:41:49 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_004148.pcap
+2025-10-09 00:41:52 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_004152.pcap
+2025-10-09 00:41:52 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:41:53 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:41:53 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_004152.pcap
+2025-10-09 00:41:56 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_004155.pcap
+2025-10-09 00:41:56 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:41:56 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:41:57 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_004155.pcap
+2025-10-09 00:42:00 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_004159.pcap
+2025-10-09 00:42:00 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:42:00 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:42:01 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_004159.pcap
+2025-10-09 00:42:04 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_004203.pcap
+2025-10-09 00:42:04 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:42:04 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:42:05 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_004203.pcap
+2025-10-09 00:42:08 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_004207.pcap
+2025-10-09 00:42:08 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:42:08 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:42:09 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_004207.pcap
+2025-10-09 00:43:27 INFO  cic.cs.unb.ca.ifm.Cmd    The pcap file or folder does not exist! -> .\other\capture_20250805_191546.pcap
+2025-10-09 00:44:12 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\other\capture_20250805_191546.pcap
+2025-10-09 00:44:12 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\outputs
+2025-10-09 00:44:12 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 17 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 17 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 46 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 46 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 46 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 46 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 46 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 46 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 65 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 65 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 114 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 114 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 118 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 118 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 123 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 123 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 123 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 123 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 124 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 124 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 126 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 126 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 136 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 136 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 136 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 136 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9475 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9475 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9475 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9475 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9475 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9475 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9477 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9477 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9481 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9481 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9482 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9482 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9490 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9490 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9513 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9515 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9523 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9523 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9523 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9523 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9538 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9538 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9538 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9538 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9539 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9539 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9551 flow
+2025-10-09 00:44:13 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9551 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23793 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23793 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23793 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23793 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23808 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23808 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23808 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23808 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23808 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23808 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23810 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23810 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23816 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23816 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23847 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23847 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23851 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23851 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23861 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23861 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23862 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23862 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23872 flow
+2025-10-09 00:44:14 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23872 flow
+2025-10-09 00:44:15 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 33339 flow
+2025-10-09 00:44:15 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 33339 flow
+2025-10-09 00:44:15 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 33348 flow
+2025-10-09 00:44:15 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 33348 flow
+2025-10-09 00:44:15 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    Timeout current has 33350 flow
+2025-10-09 00:44:15 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 33378 flow
+2025-10-09 00:44:15 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 33378 flow
+2025-10-09 00:44:15 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 41320 flow
+2025-10-09 00:44:15 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\other\capture_20250805_191546.pcap
+2025-10-09 00:44:37 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\other\capture_20250805_191546.pcap
+2025-10-09 00:44:37 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\outputs
+2025-10-09 00:44:37 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 17 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 17 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 46 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 46 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 46 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 46 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 46 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 46 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 65 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 65 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 114 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 114 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 118 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 118 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 123 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 123 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 123 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 123 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 124 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 124 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 126 flow
+2025-10-09 00:44:37 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 126 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 136 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 136 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 136 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 136 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 142 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9475 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9475 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9475 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9475 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9475 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9475 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9477 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9477 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9481 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9481 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9482 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9482 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9490 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9490 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9513 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9515 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9523 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9523 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9523 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9523 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9538 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9538 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9538 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9538 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9539 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9539 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9551 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 9551 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23793 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23793 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23793 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23793 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23808 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23808 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23808 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23808 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23808 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23808 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23810 flow
+2025-10-09 00:44:38 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23810 flow
+2025-10-09 00:44:39 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23816 flow
+2025-10-09 00:44:39 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23816 flow
+2025-10-09 00:44:39 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23847 flow
+2025-10-09 00:44:39 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23847 flow
+2025-10-09 00:44:39 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23851 flow
+2025-10-09 00:44:39 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23851 flow
+2025-10-09 00:44:39 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23861 flow
+2025-10-09 00:44:39 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23861 flow
+2025-10-09 00:44:39 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23862 flow
+2025-10-09 00:44:39 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23862 flow
+2025-10-09 00:44:39 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23872 flow
+2025-10-09 00:44:39 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 23872 flow
+2025-10-09 00:44:39 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 33339 flow
+2025-10-09 00:44:39 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 33339 flow
+2025-10-09 00:44:39 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 33348 flow
+2025-10-09 00:44:39 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 33348 flow
+2025-10-09 00:44:39 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    Timeout current has 33350 flow
+2025-10-09 00:44:40 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 33378 flow
+2025-10-09 00:44:40 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 33378 flow
+2025-10-09 00:44:40 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 41320 flow
+2025-10-09 00:44:40 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\other\capture_20250805_191546.pcap
+2025-10-09 00:49:56 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_004955.pcap
+2025-10-09 00:49:56 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:49:57 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:49:57 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_004955.pcap
+2025-10-09 00:50:00 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_004959.pcap
+2025-10-09 00:50:00 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:50:00 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:50:00 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_004959.pcap
+2025-10-09 00:50:02 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_005002.pcap
+2025-10-09 00:50:02 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:50:03 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:50:03 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_005002.pcap
+2025-10-09 00:50:06 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_005005.pcap
+2025-10-09 00:50:06 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:50:06 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:50:06 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_005005.pcap
+2025-10-09 00:50:15 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_005014.pcap
+2025-10-09 00:50:15 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:50:16 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:50:16 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_005014.pcap
+2025-10-09 00:52:11 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_005210.pcap
+2025-10-09 00:52:11 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:52:11 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:52:12 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_005210.pcap
+2025-10-09 00:52:15 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_005214.pcap
+2025-10-09 00:52:15 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:52:15 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:52:15 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_005214.pcap
+2025-10-09 00:53:54 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_005354.pcap
+2025-10-09 00:53:54 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:53:55 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:53:55 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 11 flow
+2025-10-09 00:53:55 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 13 flow
+2025-10-09 00:53:55 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 14 flow
+2025-10-09 00:53:55 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 14 flow
+2025-10-09 00:53:55 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 17 flow
+2025-10-09 00:53:55 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 19 flow
+2025-10-09 00:53:55 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 19 flow
+2025-10-09 00:53:55 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 20 flow
+2025-10-09 00:53:55 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 20 flow
+2025-10-09 00:53:55 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 21 flow
+2025-10-09 00:53:55 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 21 flow
+2025-10-09 00:53:55 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_005354.pcap
+2025-10-09 00:54:22 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_005421.pcap
+2025-10-09 00:54:22 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:54:22 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:54:23 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 22 flow
+2025-10-09 00:54:23 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 27 flow
+2025-10-09 00:54:23 DEBUG cic.cs.unb.ca.jnetpcap.FlowGenerator    FlagFIN current has 27 flow
+2025-10-09 00:54:23 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_005421.pcap
+2025-10-09 00:54:28 INFO  cic.cs.unb.ca.ifm.Cmd    You select: C:\IDS_defense\IDS_defense\pcap\temp_20251009_005428.pcap
+2025-10-09 00:54:28 INFO  cic.cs.unb.ca.ifm.Cmd    Out folder: C:\IDS_defense\IDS_defense\csv
+2025-10-09 00:54:29 INFO  cic.cs.unb.ca.ifm.Cmd    CICFlowMeter received 1 pcap file
+2025-10-09 00:54:29 DEBUG cic.cs.unb.ca.jnetpcap.PacketReader    Read All packets on C:\IDS_defense\IDS_defense\pcap\temp_20251009_005428.pcap

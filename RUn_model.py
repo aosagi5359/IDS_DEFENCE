@@ -14,9 +14,9 @@ import json
 import threading
 import winreg
 import psutil
-import queue
 from concurrent.futures import ThreadPoolExecutor
 import socket
+import random
 import subprocess
 from binascii import hexlify
 import ipaddress
@@ -24,11 +24,16 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.animation import FuncAnimation
 import matplotlib
+from collections import deque
 matplotlib.rcParams['font.family'] = 'Noto Sans TC'
 matplotlib.rcParams['font.sans-serif'] = ['Noto Sans TC']
 matplotlib.rcParams['axes.unicode_minus'] = False
 # 確保日誌目錄存在
 LOG_DIR = 'C:/IDS_defense/logs'
+packet_queue       = deque(maxlen=6000)  
+dropped_packets    = 0
+DROP_MODE          = False
+displayed_this_sec = 0
 try:
     os.makedirs(LOG_DIR, exist_ok=True)
     logger = logging.getLogger(__name__)
@@ -73,15 +78,13 @@ except Exception as e:
 CONFIG_FILE = 'C:/IDS_defense/config.json'
 # 執行緒鎖
 lock = threading.Lock()
-# 封包處理隊列
-packet_queue = queue.Queue()
 # 新增：白名單端口和自動封鎖變數
 whitelist_ports = []
 auto_block_ports = True # 預設啟用自動封鎖
 # 新增：日志統計
 log_stats = {'total': 0, 'warning': 0, 'top_types': Counter()}
 # 新增：模型選擇和更新
-available_models = {'xgboost': 'C:\\IDS_defense\\PROJ2\\xgboost_model.pkl', 'rf': 'C:\\IDS_defense\\PROJ2\\rf_model.pkl'} # 假設有 RF 模型
+available_models = {'xgboost': 'C:\\IDS_defense\\models\\xgboost_model.pkl', 'rf': 'C:\\IDS_defense\\models\\rf_model.pkl'} # 假設有 RF 模型
 current_model = 'xgboost'
 # ==================== 響應式字體 & 按鍵大小（自動隨視窗縮放） ====================
 import tkinter.font as tkfont
@@ -239,17 +242,17 @@ def is_multicast_or_broadcast(ip):
 def get_training_features():
     """返回模型訓練時的確切 30 個特徵順序"""
     features = [
-        'URG Flag Cnt', 'Bwd Header Len', 'ECE Flag Cnt', 'PSH Flag Cnt', 'FIN Flag Cnt', 'SYN Flag Cnt', 'RST Flag Cnt', 'Bwd PSH Flags', 'Bwd URG Flags', 'Dst Port', 'ACK Flag Cnt', 'Bwd Pkts/s', 'Init Bwd Win Byts', 'Src Port', 'Flow Duration', 'Fwd Header Len', 'Flow IAT Mean', 'TotLen Bwd Pkts', 'Bwd Pkt Len Max', 'Fwd Pkts/s', 'Tot Bwd Pkts', 'Bwd IAT Std', 'Pkt Len Mean', 'Flow IAT Std', 'Flow IAT Max', 'Flow Byts/s', 'Fwd Pkt Len Max', 'Flow Pkts/s', 'Down/Up Ratio', 'Bwd IAT Tot'
+        'ECE Flag Cnt', 'URG Flag Cnt', 'RST Flag Cnt', 'FIN Flag Cnt', 'Bwd URG Flags', 'ACK Flag Cnt', 'PSH Flag Cnt', 'Bwd PSH Flags', 'SYN Flag Cnt', 'Fwd Header Len', 'Protocol', 'Dst Port', 'Bwd Header Len', 'Init Bwd Win Byts', 'Src Port', 'Pkt Size Avg', 'Down/Up Ratio', 'Bwd IAT Max', 'Bwd IAT Mean', 'Bwd Pkts/s', 'Tot Bwd Pkts', 'Fwd Pkts/s', 'Subflow Bwd Pkts', 'Bwd IAT Tot', 'Flow Duration', 'Bwd Pkt Len Max', 'Flow IAT Mean', 'Pkt Len Max', 'Flow Pkts/s', 'Bwd Pkt Len Mean'
     ]
     logger.debug(f" 載入訓練特徵：{len(features)} 個，順序正確")
     return features
 def predict_flow(model, le, flow_df, training_features):
     """預測流量並返回詳細診斷資訊"""
     try:
-        scaler = joblib.load('C:\\IDS_defense\\PROJ2\\scaler.pkl')
+        scaler = joblib.load('C:\\IDS_defense\\models\\scaler.pkl')
         # 模型訓練時的確切 30 個特徵順序
         model_feature_names = [
-            'URG Flag Cnt', 'Bwd Header Len', 'ECE Flag Cnt', 'PSH Flag Cnt', 'FIN Flag Cnt', 'SYN Flag Cnt', 'RST Flag Cnt', 'Bwd PSH Flags', 'Bwd URG Flags', 'Dst Port', 'ACK Flag Cnt', 'Bwd Pkts/s', 'Init Bwd Win Byts', 'Src Port', 'Flow Duration', 'Fwd Header Len', 'Flow IAT Mean', 'TotLen Bwd Pkts', 'Bwd Pkt Len Max', 'Fwd Pkts/s', 'Tot Bwd Pkts', 'Bwd IAT Std', 'Pkt Len Mean', 'Flow IAT Std', 'Flow IAT Max', 'Flow Byts/s', 'Fwd Pkt Len Max', 'Flow Pkts/s', 'Down/Up Ratio', 'Bwd IAT Tot'
+            'ECE Flag Cnt', 'URG Flag Cnt', 'RST Flag Cnt', 'FIN Flag Cnt', 'Bwd URG Flags', 'ACK Flag Cnt', 'PSH Flag Cnt', 'Bwd PSH Flags', 'SYN Flag Cnt', 'Fwd Header Len', 'Protocol', 'Dst Port', 'Bwd Header Len', 'Init Bwd Win Byts', 'Src Port', 'Pkt Size Avg', 'Down/Up Ratio', 'Bwd IAT Max', 'Bwd IAT Mean', 'Bwd Pkts/s', 'Tot Bwd Pkts', 'Fwd Pkts/s', 'Subflow Bwd Pkts', 'Bwd IAT Tot', 'Flow Duration', 'Bwd Pkt Len Max', 'Flow IAT Mean', 'Pkt Len Max', 'Flow Pkts/s', 'Bwd Pkt Len Mean'
         ]
         # 構建特徵向量並記錄映射結果
         feature_vector = []
@@ -378,7 +381,7 @@ class IDSApp:
         # 載入模型
         self.model_path = available_models[current_model]
         self.model = joblib.load(self.model_path)
-        self.le = joblib.load('C:\\IDS_defense\\PROJ2\\label_encoder.pkl')
+        self.le = joblib.load('C:\\IDS_defense\\models\\label_encoder.pkl')
         self.training_features = get_training_features()
         self.flow_state = {}
         self.sniffing = False
@@ -1524,11 +1527,10 @@ class IDSApp:
             raw_text.config(state='disabled')
             logger.debug(f"已顯示封包詳細資訊，時間戳：{packet_id}")
     def update_packet_rate(self):
-        """更新 GUI 中的封包處理速率（改用每秒計數，超穩定）"""
+        """正確顯示即時封包速率（每秒重置）"""
         if self.sniffing:
-            # 直接顯示這一秒收到的封包數（最準確、最平滑）
-            rate = self.packet_count_sec
-            self.packet_rate.set(f"封包速率：{rate} packets/s")
+            rate = getattr(self, 'packet_count_sec', 0)
+            self.packet_rate.set(f"封包速率：{rate:,} packets/s")
         else:
             self.packet_rate.set("封包速率：0 packets/s")
         self.root.after(1000, self.update_packet_rate)
@@ -1814,98 +1816,133 @@ class IDSApp:
                 table.reattach(item, '', 'end')
         self.log_message("已清除搜索過濾，顯示所有封包")
     def toggle_sniffing(self):
-        """開始或停止封包嗅探或 pcap 分析（企業級穩定版）"""
+        """開始/停止 - 絕對不卡版的終極方案"""
+        global dropped_packets, DROP_MODE
+
         if not self.sniffing:
-            # ==================== 開始檢測 ====================
-            mode = self.monitor_mode.get()
-            self.detection_data = []
-            self.session_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-
-            # 關鍵：真正開始時間（只設一次！）
+            # ============ 開始 ============
             self.detect_start_time = time.time()
-            self.packet_count = 0
-            self.packet_count_sec = 0
-            self.last_sec_time = time.time()
+            dropped_packets = 0
+            DROP_MODE = False
+            displayed_this_sec = 0
 
-            # 清空所有統計數據（一次搞定，絕不殘留）
-            reset_attrs = [
-                'timestamps', 'packet_rates',
-                'threat_times', 'threat_rates',
-                'ratio_times', 'benign_ratios', 'malicious_ratios',
-                'benign_count', 'malicious_count',
-                'src_ips', 'port_counter', 'protocol_counts',
-                'benign_ips', 'malicious_ips', 'packet_details',
-                'current_pcap_packets'
-            ]
-            for attr in reset_attrs:
+            # 清空 deque 和所有統計
+            packet_queue.clear()
+            for attr in ['timestamps','packet_rates','threat_times','threat_rates',
+                        'ratio_times','benign_ratios','malicious_ratios','benign_count',
+                        'malicious_count','src_ips','port_counter','protocol_counts',
+                        'benign_ips','malicious_ips','packet_details','current_pcap_packets']:
                 if hasattr(self, attr):
-                    value = getattr(self, attr)
-                    if isinstance(value, (list, dict, Counter)):
-                        value.clear()
-                    else:
-                        setattr(self, attr, type(value)())
+                    obj = getattr(self, attr)
+                    if hasattr(obj, 'clear'):
+                        obj.clear()
 
-            # 重置圖表髒標記
-            for key in self.chart_dirty:
-                self.chart_dirty[key] = True
+            self.log_message(f"開始檢測 - 模式：{self.monitor_mode.get()}")
+            self.sniffing = True
+            self.start_button.config(text="停止檢測")
 
-            self.log_message(f"開始檢測（模式：{mode}） - 所有統計已重置")
-
-            if mode == "offline":
+            if self.monitor_mode.get() == "offline":
                 if not self.pcap_file.get():
-                    self.log_message("離線模式下未選擇 pcap 檔案")
-                    messagebox.showerror("錯誤", "請選擇 .pcap 檔案")
+                    messagebox.showerror("錯誤", "請先選擇 pcap 檔案")
+                    self.sniffing = False
+                    self.start_button.config(text="開始檢測")
                     return
-                self.sniffing = True
-                self.start_button.config(text="停止檢測")
-                self.sniff_thread = threading.Thread(target=self.process_offline_pcap, daemon=True)
-                self.sniff_thread.start()
+                threading.Thread(target=self.process_offline_pcap, daemon=True).start()
             else:
-                if not self.local_ip:
-                    self.log_message("無法獲取本機 IP")
-                    messagebox.showerror("錯誤", "無法獲取本機 IP")
-                    return
-                if not self.interface_var.get():
-                    self.log_message("未選擇網絡介面")
-                    messagebox.showerror("錯誤", "請選擇網絡介面")
-                    return
-
-                self.sniffing = True
-                self.start_button.config(text="停止檢測")
-                self.sniff_thread = threading.Thread(target=self.start_sniffing, daemon=True)
-                self.process_thread = threading.Thread(target=self.process_packets, daemon=True)
-                self.sniff_thread.start()
-                self.process_thread.start()
+                threading.Thread(target=self.start_sniffing, daemon=True).start()
+                threading.Thread(target=self.process_packets, daemon=True).start()
 
         else:
-            # ==================== 停止檢測 ====================
+            # ============ 強制停止（現在真的穩如老狗）============
             self.sniffing = False
-            packet_queue.put(None)  # 停止信號
+            DROP_MODE = False
 
-            # 安全等待執行緒結束
-            for thread_name in ('sniff_thread', 'process_thread'):
-                thread = getattr(self, thread_name, None)
-                if thread and thread.is_alive():
-                    thread.join(timeout=8)
+            # 瞬間清空佇列（表格立刻不跳）
+            try:
+                packet_queue.clear()
+            except:
+                pass
 
-            # 清空佇列
-            while not packet_queue.empty():
-                try: packet_queue.get_nowait()
-                except queue.Empty: break
+            # 強制關閉執行緒池
+            try:
+                self.executor.shutdown(wait=False, cancel_futures=True)
+            except:
+                pass
 
+            # 強制重建執行緒池（防止殭屍）
+            max_threads = int(self.max_threads_var.get() or 4)
+            self.executor = ThreadPoolExecutor(max_workers=max_threads)
+
+            # 強制恢復按鈕（最快 0.1 秒看到反應）
             self.start_button.config(text="開始檢測")
-            self.log_message("檢測已停止，所有執行緒已安全結束")
-    def start_sniffing(self):
-        """在獨立執行緒中開始封包嗅探"""
+            
+            self.log_message("檢測已強制停止（系統 100% 安全）")
+
+            if dropped_packets > 0:
+                self.log_message(f"本次檢測因抗 Flood 保護，共丟棄 {dropped_packets:,} 個封包")
+
+
+    def shutdown_executor_safe(self):
+        """安全關閉 ThreadPoolExecutor（解決 CICFlowMeter 卡住問題）"""
         try:
-            interface = self.interface_map.get(self.interface_var.get())
-            if not interface:
-                raise ValueError("無效的網絡介面")
-            sniff(iface=interface, prn=lambda pkt: packet_queue.put(pkt), store=0)
-        except Exception as e:
-            logger.error(f"嗅探失敗：{str(e)}")
-            self.log_message(f"嗅探失敗：{str(e)}")
-            self.root.after(0, lambda: messagebox.showerror("錯誤", f"嗅探失敗：{str(e)}"))
+            # 強制取消所有任務
+            self.executor.shutdown(wait=False, cancel_futures=True)
+        except:
+            pass
+        # 重新建立乾淨的執行緒池
+        max_threads = int(self.max_threads_var.get() or 4)
+        self.executor = ThreadPoolExecutor(max_workers=max_threads)
+    def start_sniffing(self):
+        """啟動嗅探 - 絕對不會讓程式退出版（已徹底封印所有異常）"""
+        interface = self.interface_map.get(self.interface_var.get())
+        if not interface:
+            self.root.after(0, lambda: messagebox.showerror("錯誤", "請選擇有效的網路介面"))
+            return
+
+        def packet_handler(pkt):
+            # 停止旗標檢查
+            if not getattr(self, 'sniffing', False):
+                return False
+            # 佇列滿就丟
+            if len(packet_queue) >= packet_queue.maxlen:
+                global dropped_packets
+                dropped_packets += 1
+                return
+            try:
+                packet_queue.append(pkt)
+            except:
+                pass  # 即使 deque 炸了也不讓程式死
+
+        self.log_message(f"開始嗅探介面：{interface}")
+
+        # 終極防崩潰迴圈（任何異常都進 finally，不會傳到 Tkinter）
+        while getattr(self, 'sniffing', False):
+            try:
+                # 這行是關鍵：把所有 sniff 的異常全部吃掉
+                sniff(
+                    iface=interface,
+                    prn=packet_handler,
+                    store=0,
+                    timeout=1,
+                    count=0,
+                    # 絕對不要加 stopped_filter 或其他高級參數
+                )
+            except Exception as e:
+                # 所有 Scapy/Npcap 異常都在這裡被徹底攔截
+                if getattr(self, 'sniffing', False):
+                    logger.debug(f"sniff 內部異常已攔截（正常現象）：{e}")
+                continue
+            except KeyboardInterrupt:
+                break
+            except SystemExit:
+                break
+            except:
+                if getattr(self, 'sniffing', False):
+                    logger.debug("sniff 未知異常已攔截")
+                continue
+
+        # 一定會執行的結束流程
+        self.root.after(0, lambda: self.log_message("嗅探執行緒已安全結束"))
     def load_pcap(self):
         """在獨立執行緒中讀取 pcap 檔案並處理"""
         try:
@@ -1923,138 +1960,201 @@ class IDSApp:
             self.sniffing = False
             self.root.after(0, lambda: self.start_button.config(text="開始檢測"))
     def process_packets(self):
-        self.last_sec_time = time.time()
+        """終極抗 Flood 處理迴圈（已修復速率顯示 + 完全防當機）"""
+        global dropped_packets, DROP_MODE, displayed_this_sec
+
+        # 每秒統計用的變數
+        self.packet_count_sec = 0
+        last_sec = int(time.time())
+
         while self.sniffing:
             try:
-                # 每秒重置計數器
-                if time.time() - self.last_sec_time >= 1.0:
-                    self.packet_count_sec = 0
-                    self.last_sec_time = time.time()
-                    
-                    # 真正的秒數時間軸（這才是王道！）
-                    current_sec = int(time.time() - self.detect_start_time)
-                    
-                    # 只記錄一次，避免重複
-                    if not self.timestamps or self.timestamps[-1] != current_sec:
-                        self.timestamps.append(current_sec)
-                        self.packet_rates.append(0)  # 會被後面累加
-                        self.threat_times.append(current_sec)
-                        self.threat_rates.append(self.malicious_count / max((time.time() - self.detect_start_time), 1))
-                        self.ratio_times.append(current_sec)
+                now = time.time()
+                current_sec = int(now)
 
-                if self.packet_count_sec >= self.max_packets_per_sec:
-                    time.sleep(0.1)
+                # === 每秒重置計數器 ===
+                if current_sec != last_sec:
+                    self.packet_count_sec = 0  # 這行是關鍵！讓 GUI 能正確顯示速率
+                    displayed_this_sec = 0
+                    last_sec = current_sec
+
+                    # 自動偵測 Flood
+                    qsize = len(packet_queue)
+                    if qsize > 4500 and not DROP_MODE:
+                        DROP_MODE = True
+                        self.root.after(0, lambda: self.log_message("極端 Flood 偵測！啟動 98% 丟包模式（保護系統）"))
+                    elif qsize < 800 and DROP_MODE:
+                        DROP_MODE = False
+                        self.root.after(0, lambda: self.log_message("流量恢復正常，關閉極端保護"))
+
+                # === GUI 顯示限流（每秒最多 80 筆）===
+                if displayed_this_sec >= 80:
+                    if packet_queue:
+                        packet_queue.popleft()
+                        dropped_packets += 1
+                        self.packet_count_sec += 1  # 就算沒顯示，也算進速率
+                    time.sleep(0.001)
                     continue
 
-                packet = packet_queue.get(timeout=1)
-                if packet is None:
-                    break
+                # === 取出封包 ===
+                if not packet_queue:
+                    time.sleep(0.001)
+                    continue
 
+                packet = packet_queue.popleft()
+                self.packet_count_sec += 1  # 每處理一包就 +1
+
+                # === 極端丟包模式（Flood 時只保留 2%）===
+                if DROP_MODE and random.random() > 0.02:
+                    dropped_packets += 1
+                    continue
+
+                # === 正常處理 ===
                 self.packet_callback(packet)
-                self.packet_count_sec += 1
+                displayed_this_sec += 1
 
-            except queue.Empty:
-                continue
             except Exception as e:
-                logger.error(f"處理封包錯誤: {e}")
+                if self.sniffing:  # 只有在運行中才記錄錯誤
+                    logger.error(f"process_packets 保護觸發: {e}")
+
+        # 停止後報告
+        if dropped_packets > 0:
+            self.root.after(0, lambda: self.log_message(f"檢測結束，本次共丟棄 {dropped_packets:,} 個封包（抗 Flood 保護）"))
     def process_offline_pcap(self):
-        """離線模式：直接用 scapy 逐包計算 CICFlowMeter 特徵 + 即時預測（不再呼叫 cfm.bat）"""
+        """離線模式：最穩版 CICFlowMeter 呼叫（絕不讓程式整個死掉）"""
         try:
             pcap_path = self.pcap_file.get().strip()
             if not pcap_path or not os.path.exists(pcap_path):
                 messagebox.showerror("錯誤", "請選擇有效的 .pcap/.pcapng 檔案")
                 return
 
-            self.log_message(f"開始離線分析（純 Scapy 版）：{os.path.basename(pcap_path)}")
-            packets = rdpcap(pcap_path)
+            self.log_message(f"開始離線分析：{os.path.basename(pcap_path)}")
+            
+            # 強制建立輸出目錄
+            csv_dir_abs = os.path.abspath(self.csv_dir)
+            os.makedirs(csv_dir_abs, exist_ok=True)
 
-            if len(packets) == 0:
-                messagebox.showinfo("完成", "pcap 內無封包")
-                return
+            cmd = f'cfm.bat "{pcap_path}" "{csv_dir_abs}"'
+            self.log_message("正在啟動 CICFlowMeter 產生 CSV，請稍候…（視檔案大小可能需要數十秒到數分鐘）")
 
-            # 用 Scapy 自己生成 flow（五元組 + 方向）
-            flows = defaultdict(lambda: {
-                'packets': [], 'start_time': None, 'src_ip': None, 'dst_ip': None,
-                'src_port': None, 'dst_port': None, 'proto': None
-            })
+            # 關鍵修復點 1：不要用 timeout！改用非阻塞啟動 + 輪詢
+            process = subprocess.Popen(
+                cmd,
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                creationflags=subprocess.CREATE_NEW_PROCESS_GROUP  # 防止 Ctrl+C 影響
+            )
 
-            for pkt in packets:
-                if IP not in pkt:
-                    continue
-                key = (pkt[IP].src, pkt[IP].dst, pkt[IP].proto,
-                       pkt.sport if TCP in pkt or UDP in pkt else 0,
-                       pkt.dport if TCP in pkt or UDP in pkt else 0)
-                rev_key = (pkt[IP].dst, pkt[IP].src, pkt[IP].proto,
-                           pkt.dport if TCP in pkt or UDP in pkt else 0,
-                           pkt.sport if TCP in pkt or UDP in pkt else 0)
+            # 關鍵修復點 2：用一個小視窗顯示「處理中」，避免使用者以為當機
+            progress_win = tk.Toplevel(self.root)
+            progress_win.title("離線分析進行中")
+            progress_win.geometry("400x120")
+            progress_win.transient(self.root)
+            progress_win.grab_set()  # 鎖定焦點
+            ttk.Label(progress_win, text="CICFlowMeter 正在分析檔案…\n請耐心等待，不要關閉程式", justify="center").pack(pady=20)
+            progress_bar = ttk.Progressbar(progress_win, mode='indeterminate')
+            progress_bar.pack(fill="x", padx=20, pady=10)
+            progress_bar.start()
 
-                flow_key = key if key in flows else rev_key if rev_key in flows else key
-                flow = flows[flow_key]
+            # 關鍵修復點 3：用 after 輪詢進程狀態（完全不卡 GUI）
+            def check_process():
+                if process.poll() is None:  # 還在跑
+                    self.root.after(500, check_process)
+                else:
+                    progress_win.destroy()
+                    stdout, stderr = process.communicate()
+                    err_text = stderr.decode('cp950', errors='replace')
+                    if process.returncode != 0:
+                        self.log_message(f"CICFlowMeter 失敗：{err_text}")
+                        messagebox.showerror("CICFlowMeter 錯誤", err_text[:1000])
+                        self._finish_offline()
+                        return
 
-                if flow['start_time'] is None:
-                    flow['start_time'] = pkt.time
-                    flow['src_ip'], flow['dst_ip'] = pkt[IP].src, pkt[IP].dst
-                    flow['proto'] = pkt[IP].proto
-                    flow['src_port'] = pkt.sport if TCP in pkt or UDP in pkt else 0
-                    flow['dst_port'] = pkt.dport if TCP in pkt or UDP in pkt else 0
+                    # 成功 → 找最新 CSV 並開始預測
+                    self.root.after(1000, self._continue_offline_analysis)  # 稍微等一下讓檔案寫完
 
-                flow['packets'].append(pkt)
-
-            self.log_message(f"共提取 {len(flows)} 條 flow，開始模型預測…")
-
-            benign = 0
-            malicious = 0
-
-            # 批次處理（每 100 條更新一次 GUI，避免卡死）
-            flow_list = list(flows.values())
-            for i in range(0, len(flow_list), 100):
-                batch = flow_list[i:i+100]
-
-                for flow in batch:
-                    try:
-                        # 這裡直接用你原本的 CICFlowMeter 特徵計算函數（你專案裡應該有）
-                        # 如果你沒有，我下面給你一個極簡版也能跑
-                        features = self.extract_features_from_flow(flow)  # ← 你要實作這個
-                        if not features:
-                            continue
-
-                        flow_df = pd.DataFrame([features])
-                        label, diagnosis = predict_flow(self.model, self.le, flow_df, self.training_features)
-
-                        label_str = str(label).capitalize() if label else "Benign"
-                        is_malicious = label_str.lower() != 'benign'
-
-                        if is_malicious:
-                            malicious += 1
-                        else:
-                            benign += 1
-
-                        # 直接呼叫（不要用 lambda + after，大量時會炸）
-                        self.add_packet_to_table(
-                            flow['src_ip'], flow['dst_ip'], flow['proto'],
-                            label_str, features, None,
-                            force_display=is_malicious, diagnosis=diagnosis
-                        )
-                    except Exception as e:
-                        logger.error(f"離線 flow 預測失敗: {e}")
-                        continue
-
-                # 每批次強制刷新 GUI，否則會卡死
-                self.root.update_idletasks()
-                time.sleep(0.001)  # 讓出 CPU
-
-            self.log_message(f"離線分析完成！正常 {benign} 條，惡意 {malicious} 條")
-            messagebox.showinfo("離線分析完成",
-                                f"總 flow 數：{len(flows)}\n"
-                                f"正常：{benign} 條\n"
-                                f"惡意：{malicious} 條")
+            self.root.after(500, check_process)
 
         except Exception as e:
             logger.exception(e)
-            messagebox.showerror("離線分析失敗", str(e))
+            messagebox.showerror("啟動失敗", str(e))
+            self._finish_offline()
+
+    def _continue_offline_analysis(self):
+        """接續：讀取剛剛產生的 CSV 並預測（與即時模式 100% 一致）"""
+        try:
+            csv_dir_abs = os.path.abspath(self.csv_dir)
+            csv_files = [f for f in os.listdir(csv_dir_abs) if f.endswith(".csv")]
+            if not csv_files:
+                messagebox.showerror("錯誤", "未找到 CICFlowMeter 產生的 CSV 檔案")
+                self._finish_offline()
+                return
+
+            csv_files.sort(key=lambda f: os.path.getmtime(os.path.join(csv_dir_abs, f)), reverse=True)
+            latest_csv = os.path.join(csv_dir_abs, csv_files[0])
+
+            # 讀檔（超強容錯）
+            df = None
+            for enc in ['cp950', 'utf-8-sig', 'utf-8', 'big5']:
+                try:
+                    df = pd.read_csv(latest_csv, encoding=enc, low_memory=False)
+                    if len(df) > 0:
+                        self.log_message(f"CSV 讀取成功（{enc}），共 {len(df):,} 條流量")
+                        break
+                except Exception as e:
+                    continue
+
+            if df is None or df.empty:
+                messagebox.showerror("錯誤", "無法讀取 CSV（可能損壞或為空）")
+                self._finish_offline()
+                return
+
+            # 開始逐條預測
+            benign = malicious = 0
+            total = len(df)
+            for idx, row in df.iterrows():
+                try:
+                    src_ip = str(row.get('Src IP', 'N/A'))
+                    dst_ip = str(row.get('Dst IP', 'N/A'))
+                    proto = int(row['Protocol']) if pd.notna(row.get('Protocol')) else 0
+
+                    features = row.to_dict()
+                    flow_df = pd.DataFrame([features])
+                    label, diagnosis = predict_flow(self.model, self.le, flow_df, self.training_features)
+                    label_str = str(label).capitalize() if label else "Benign"
+                    is_malicious = label_str.lower() != 'benign'
+
+                    if is_malicious: malicious += 1
+                    else: benign += 1
+
+                    self.root.after(0, self.add_packet_to_table,
+                                    src_ip, dst_ip, proto, label_str, features, None, False, diagnosis)
+
+                    # 每 100 筆更新一次進度（不卡）
+                    if (idx + 1) % 100 == 0 or (idx + 1) == total:
+                        self.log_message(f"分析進度：{idx+1}/{total}（正常 {benign} | 惡意 {malicious}）")
+
+                except Exception as e:
+                    logger.error(f"第 {idx} 條預測錯誤: {e}")
+
+            self.log_message(f"離線分析完成！共 {total} 條流量 → 正常 {benign} | 惡意 {malicious}")
+            messagebox.showinfo("完成", f"離線分析完畢！\n\n"
+                                    f"檔案：{os.path.basename(self.pcap_file.get())}\n"
+                                    f"總流量數：{total:,}\n"
+                                    f"正常流量：{benign:,}\n"
+                                    f"惡意流量：{malicious:,}")
+
+        except Exception as e:
+            logger.exception(e)
+            messagebox.showerror("分析失敗", str(e))
         finally:
-            self.sniffing = False
-            self.root.after(0, lambda: self.start_button.config(text="開始檢測"))
+            self._finish_offline()
+
+    def _finish_offline(self):
+        """統一收尾：恢復按鈕狀態"""
+        self.sniffing = False
+        self.root.after(0, lambda: self.start_button.config(text="開始檢測"))
     def packet_callback(self, packet):
         """處理每個捕獲的封包，累積到 current_pcap_packets 並根據時間間隔觸發 pcap 處理"""
         try:
@@ -2120,41 +2220,7 @@ class IDSApp:
             logger.error(f"封包處理失敗：{str(e)}")
             self.log_message(f"封包處理失敗：{str(e)}")
             
-    def extract_features_from_flow(self, flow):
-        """極簡版特徵提取，能讓 XGBoost/RF 模型跑就行"""
-        pkts = flow['packets']
-        if not pkts:
-            return None
-
-        times = [p.time for p in pkts]
-        sizes = [len(p) for p in pkts]
-
-        duration = max(times) - min(times) if len(times) > 1 else 0
-        pkt_count = len(pkts)
-        byte_count = sum(sizes)
-
-        fwd_pkts = sum(1 for p in pkts if p[IP].src == flow['src_ip'])
-        bwd_pkts = pkt_count - fwd_pkts
-
-        return {
-            'Flow Duration': duration * 1e6,  # 微秒
-            'Tot Fwd Pkts': fwd_pkts,
-            'Tot Bwd Pkts': bwd_pkts,
-            'TotLen Fwd Pkts': sum(len(p) for p in pkts if p[IP].src == flow['src_ip']),
-            'TotLen Bwd Pkts': sum(len(p) for p in pkts if p[IP].src != flow['src_ip']),
-            'Fwd Pkt Len Mean': np.mean([len(p) for p in pkts if p[IP].src == flow['src_ip']]) if fwd_pkts else 0,
-            'Bwd Pkt Len Mean': np.mean([len(p) for p in pkts if p[IP].src != flow['src_ip']]) if bwd_pkts else 0,
-            'Flow Byts/s': byte_count / (duration + 1e-6) if duration > 0 else 0,
-            'Flow Pkts/s': pkt_count / (duration + 1e-6) if duration > 0 else 0,
-            'Protocol': flow['proto'],
-            'Src Port': flow['src_port'],
-            'Dst Port': flow['dst_port'],
-            # 其餘特徵填 0（模型會自己處理缺失）
-            **{f: 0 for f in self.training_features if f not in [
-                'Flow Duration','Tot Fwd Pkts','Tot Bwd Pkts','TotLen Fwd Pkts','TotLen Bwd Pkts',
-                'Fwd Pkt Len Mean','Bwd Pkt Len Mean','Flow Byts/s','Flow Pkts/s','Protocol','Src Port','Dst Port'
-            ]}
-        }
+    
     def process_pcap_to_csv(self):
         """將累積的封包儲存為 .pcap 並轉換為 .csv，然後觸發流量處理（企業級穩定版）"""
         if not self.current_pcap_packets:

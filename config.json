@@ -1,0 +1,16 @@
+{
+    "whitelist_ips": [],
+    "max_threads": 14,
+    "monitor_mode": "local",
+    "pcap_file": "",
+    "cache_timeout": 300,
+    "pcap_interval": 1000,
+    "warning_cooldown": 60,
+    "whitelist_ports": [],
+    "auto_block_ports": false,
+    "flood_protection_enabled": true,
+    "flood_queue_high": 4500,
+    "flood_queue_low": 800,
+    "flood_keep_ratio": 0.02,
+    "show_benign": false
+}

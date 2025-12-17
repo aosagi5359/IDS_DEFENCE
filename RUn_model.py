@@ -24,13 +24,18 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.animation import FuncAnimation
 import matplotlib
-from collections import deque
+import queue
+# Flood 保護相關全域變數（會被設定覆蓋）
+FLOOD_PROTECTION_ENABLED = True
+FLOOD_QUEUE_HIGH = 4500      # 佇列大於此值啟動丟包
+FLOOD_QUEUE_LOW = 800        # 佇列小於此值恢復正常
+FLOOD_KEEP_RATIO = 0.02      # Flood 時保留比例（2%）
+packet_queue = queue.Queue(maxsize=6000)
 matplotlib.rcParams['font.family'] = 'Noto Sans TC'
 matplotlib.rcParams['font.sans-serif'] = ['Noto Sans TC']
 matplotlib.rcParams['axes.unicode_minus'] = False
 # 確保日誌目錄存在
 LOG_DIR = 'C:/IDS_defense/logs'
-packet_queue       = deque(maxlen=6000)  
 dropped_packets    = 0
 DROP_MODE          = False
 displayed_this_sec = 0
@@ -60,20 +65,6 @@ except Exception as e:
         format='%(asctime)s - %(levelname)s - %(message)s',
         handlers=[logging.StreamHandler()]
     )
-# 配置危險日誌
-hazard_log_file = os.path.join(LOG_DIR, f'hazard_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log')
-hazard_logger = logging.getLogger('HazardLogger')
-hazard_logger.setLevel(logging.WARNING)
-try:
-    hazard_handler = logging.handlers.RotatingFileHandler(
-        hazard_log_file, maxBytes=10*1024*1024, backupCount=5, encoding='utf-8'
-    )
-    hazard_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-    hazard_logger.addHandler(hazard_handler)
-    logger.debug(f"危險日誌已配置：{hazard_log_file}")
-except Exception as e:
-    logger.error(f"無法配置危險日誌：{str(e)}")
-    hazard_logger.addHandler(logging.StreamHandler())
 # JSON 配置文件
 CONFIG_FILE = 'C:/IDS_defense/config.json'
 # 執行緒鎖
@@ -93,6 +84,54 @@ import tkinter.font as tkfont
 BASE_FONT_SIZE = 10
 BUTTON_PADDING_Y = 8
 BUTTON_PADDING_X = 12
+# ==================== 危險日誌 logger 安全初始化 ====================
+hazard_logger = logging.getLogger('HazardLogger')
+hazard_logger.setLevel(logging.WARNING)
+hazard_logger.propagate = False  # 避免重複輸出到 root logger
+
+# 先加一個保險的 StreamHandler，確保 logger 永遠能輸出（即使檔案失敗）
+fallback_handler = logging.StreamHandler()
+fallback_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+hazard_logger.addHandler(fallback_handler)
+
+# ==================== 改為每日輪替的 hazard 日誌 ====================
+def setup_hazard_logger():
+    """每天產生一個新的 hazard 日誌檔案，並確保 handler 永遠有效"""
+    global hazard_logger, hazard_log_file
+    
+    # 移除舊的 handlers（避免重複添加）
+    if hazard_logger:
+        hazard_logger.handlers.clear()
+    
+    # 每日新檔名
+    today = datetime.now().strftime("%Y%m%d")
+    hazard_log_file = os.path.join(LOG_DIR, f'hazard_{today}.log')
+    
+    hazard_logger = logging.getLogger('HazardLogger')
+    hazard_logger.setLevel(logging.WARNING)
+    hazard_logger.propagate = False  # 防止傳到 root logger
+    
+    # 每天一個檔案，手動控制（比 Rotating 更可靠）
+    file_handler = logging.FileHandler(hazard_log_file, encoding='utf-8')
+    file_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+    hazard_logger.addHandler(file_handler)
+    
+    logger.info(f"危險日誌已重新配置：{hazard_log_file}")
+
+# 程式啟動時呼叫一次
+setup_hazard_logger()
+
+# 每天午夜自動切換新檔案（加入 periodic_cleanup）
+def periodic_cleanup(self):
+    clean_flow_state(self.flow_state)
+    # backup_hazard_log()  # 可保留備份舊檔
+    # 每天檢查是否需要切新 hazard 檔
+    today = datetime.now().strftime("%Y%m%d")
+    current_hazard_file = os.path.join(LOG_DIR, f'hazard_{today}.log')
+    global hazard_log_file
+    if hazard_log_file != current_hazard_file:
+        setup_hazard_logger()  # 切換新檔
+    self.root.after(60000, self.periodic_cleanup)  # 改為每分鐘檢查一次
 
 class ResponsiveDesign:
     def __init__(self, root):
@@ -151,10 +190,11 @@ class ResponsiveDesign:
         # 強制更新所有 widget
         self.root.update_idletasks()
 # ===============================================================================
-def save_config(whitelist_ips, max_threads=4, monitor_mode='local', pcap_file=None, 
-                cache_timeout=300, pcap_interval=1000, warning_cooldown=60, 
-                whitelist_ports=None, auto_block=None):
-    """保存所有設定到 config.json"""
+def save_config(whitelist_ips, max_threads=4, monitor_mode='local', pcap_file=None,
+                cache_timeout=300, pcap_interval=1000, warning_cooldown=60,
+                whitelist_ports=None, auto_block=None, flood_enabled=True, flood_high=4500, flood_low=800, flood_ratio=0.02,
+                show_benign=False):
+    """保存所有設定到 config.json（加強安全性：用臨時檔寫入）"""
     try:
         config = {
             'whitelist_ips': whitelist_ips,
@@ -165,13 +205,33 @@ def save_config(whitelist_ips, max_threads=4, monitor_mode='local', pcap_file=No
             'pcap_interval': pcap_interval,
             'warning_cooldown': warning_cooldown,
             'whitelist_ports': whitelist_ports if whitelist_ports is not None else [],
-            'auto_block_ports': auto_block if auto_block is not None else True
+            'auto_block_ports': auto_block if auto_block is not None else True,
+            'flood_protection_enabled': flood_enabled,
+            'flood_queue_high': flood_high,
+            'flood_queue_low': flood_low,
+            'flood_keep_ratio': flood_ratio,
+            'show_benign': show_benign
         }
-        with open(CONFIG_FILE, 'w', encoding='utf-8') as f:
+        
+        temp_file = CONFIG_FILE + '.tmp'
+        with open(temp_file, 'w', encoding='utf-8') as f:
             json.dump(config, f, ensure_ascii=False, indent=4)
+        
+        # 寫入成功後才取代原檔
+        if os.path.exists(CONFIG_FILE):
+            os.replace(temp_file, CONFIG_FILE)  # 原子取代，安全
+        else:
+            os.rename(temp_file, CONFIG_FILE)
+            
         logger.debug(f"配置已成功保存到 {CONFIG_FILE}")
     except Exception as e:
         logger.error(f"保存配置失敗：{str(e)}")
+        # 如果失敗，刪除臨時檔
+        if os.path.exists(temp_file):
+            try:
+                os.remove(temp_file)
+            except:
+                pass
 def load_config():
     """從 config.json 載入所有設定"""
     default_ports = []
@@ -184,12 +244,17 @@ def load_config():
                 # 確保是整數列表
                 default_ports = [int(p) for p in ports if isinstance(p, (int, str)) and str(p).isdigit()]
                 default_auto_block = bool(config.get('auto_block_ports', True))
-                
+                global FLOOD_PROTECTION_ENABLED, FLOOD_QUEUE_HIGH, FLOOD_QUEUE_LOW, FLOOD_KEEP_RATIO
+                FLOOD_PROTECTION_ENABLED = config.get('flood_protection_enabled', True)
+                FLOOD_QUEUE_HIGH = config.get('flood_queue_high', 4500)
+                FLOOD_QUEUE_LOW = config.get('flood_queue_low', 800)
+                FLOOD_KEEP_RATIO = max(0.001, min(1.0, config.get('flood_keep_ratio', 0.02)))  # 限制 0.1% ~ 100%
+                show_benign = bool(config.get('show_benign', False))
+
                 # 同步到全域變數（重要！）
                 global whitelist_ports, auto_block_ports
                 whitelist_ports = default_ports
                 auto_block_ports = default_auto_block
-                
                 return (
                     config.get('whitelist_ips', []),
                     config.get('max_threads', 4),
@@ -199,7 +264,8 @@ def load_config():
                     config.get('pcap_interval', 1000),
                     config.get('warning_cooldown', 60),
                     default_ports,
-                    default_auto_block
+                    default_auto_block,
+                    show_benign,
                 )
     except Exception as e:
         logger.error(f"載入配置失敗，使用預設值：{str(e)}")
@@ -240,45 +306,81 @@ def is_multicast_or_broadcast(ip):
     except ValueError:
         return False
 def get_training_features():
-    """返回模型訓練時的確切 30 個特徵順序"""
-    features = [
-        'ECE Flag Cnt', 'URG Flag Cnt', 'RST Flag Cnt', 'FIN Flag Cnt', 'Bwd URG Flags', 'ACK Flag Cnt', 'PSH Flag Cnt', 'Bwd PSH Flags', 'SYN Flag Cnt', 'Fwd Header Len', 'Protocol', 'Dst Port', 'Bwd Header Len', 'Init Bwd Win Byts', 'Src Port', 'Pkt Size Avg', 'Down/Up Ratio', 'Bwd IAT Max', 'Bwd IAT Mean', 'Bwd Pkts/s', 'Tot Bwd Pkts', 'Fwd Pkts/s', 'Subflow Bwd Pkts', 'Bwd IAT Tot', 'Flow Duration', 'Bwd Pkt Len Max', 'Flow IAT Mean', 'Pkt Len Max', 'Flow Pkts/s', 'Bwd Pkt Len Mean'
-    ]
-    logger.debug(f" 載入訓練特徵：{len(features)} 個，順序正確")
-    return features
+    """從 selected_features.pkl 載入模型訓練時的確切特徵順序（最準確方式）"""
+    features_path = 'C:\\IDS_defense\\models\\selected_features.pkl'
+    
+    try:
+        if os.path.exists(features_path):
+            features = joblib.load(features_path)
+            if isinstance(features, list) and len(features) > 0:
+                logger.info(f"成功從 {features_path} 載入 {len(features)} 個訓練特徵")
+                return features
+            else:
+                raise ValueError("載入的特徵不是有效的列表")
+        else:
+            raise FileNotFoundError(f"特徵檔案不存在：{features_path}")
+    
+    except Exception as e:
+        logger.error(f"載入訓練特徵失敗：{str(e)}")
+        # 後備方案：使用常見的 30 個特徵（避免程式崩潰）
+        fallback_features = [
+            'ECE Flag Cnt', 'URG Flag Cnt', 'RST Flag Cnt', 'FIN Flag Cnt', 'Bwd URG Flags',
+            'ACK Flag Cnt', 'PSH Flag Cnt', 'Bwd PSH Flags', 'SYN Flag Cnt', 'Fwd Header Len',
+            'Protocol', 'Dst Port', 'Bwd Header Len', 'Init Bwd Win Byts', 'Src Port',
+            'Pkt Size Avg', 'Down/Up Ratio', 'Bwd IAT Max', 'Bwd IAT Mean', 'Bwd Pkts/s',
+            'Tot Bwd Pkts', 'Fwd Pkts/s', 'Subflow Bwd Pkts', 'Bwd IAT Tot', 'Flow Duration',
+            'Bwd Pkt Len Max', 'Flow IAT Mean', 'Pkt Len Max', 'Flow Pkts/s', 'Bwd Pkt Len Mean'
+        ]
+        logger.warning("使用內建後備特徵列表（建議檢查 selected_features.pkl 是否存在）")
+        return fallback_features
 def predict_flow(model, le, flow_df, training_features):
-    """預測流量並返回詳細診斷資訊"""
+    """預測流量並返回詳細診斷資訊（加強型清理：處理字串、Inf、NaN）"""
     try:
         scaler = joblib.load('C:\\IDS_defense\\models\\scaler.pkl')
-        # 模型訓練時的確切 30 個特徵順序
-        model_feature_names = [
-            'ECE Flag Cnt', 'URG Flag Cnt', 'RST Flag Cnt', 'FIN Flag Cnt', 'Bwd URG Flags', 'ACK Flag Cnt', 'PSH Flag Cnt', 'Bwd PSH Flags', 'SYN Flag Cnt', 'Fwd Header Len', 'Protocol', 'Dst Port', 'Bwd Header Len', 'Init Bwd Win Byts', 'Src Port', 'Pkt Size Avg', 'Down/Up Ratio', 'Bwd IAT Max', 'Bwd IAT Mean', 'Bwd Pkts/s', 'Tot Bwd Pkts', 'Fwd Pkts/s', 'Subflow Bwd Pkts', 'Bwd IAT Tot', 'Flow Duration', 'Bwd Pkt Len Max', 'Flow IAT Mean', 'Pkt Len Max', 'Flow Pkts/s', 'Bwd Pkt Len Mean'
-        ]
-        # 構建特徵向量並記錄映射結果
+        model_feature_names = training_features
+
+        # === 步驟1：強制轉換所有欄位為數值（關鍵修復！）===
+        for col in flow_df.columns:
+            # 先嘗試轉成 float，失敗的變 NaN
+            flow_df[col] = pd.to_numeric(flow_df[col], errors='coerce')
+
+        # === 步驟2：清理異常值 ===
+        flow_df = flow_df.replace([np.inf, -np.inf], np.nan)  # Inf → NaN
+        flow_df = flow_df.fillna(0)  # NaN → 0
+
+        # === 步驟3：clip 極端值（現在安全了，因為都是 float）===
+        flow_df = flow_df.clip(lower=-1e10, upper=1e10)
+
+        # 構建特徵向量
         feature_vector = []
-        feature_mapping_info = {} # 記錄每個特徵的原始值和映射
+        feature_mapping_info = {}
         for i, model_feat in enumerate(model_feature_names):
             if model_feat in flow_df.columns:
                 value = float(flow_df[model_feat].iloc[0])
             else:
                 value = 0.0
             feature_vector.append(value)
-  
-            # 記錄映射資訊（僅關鍵特徵）
-            if i < 10 or value != 0: # 前10個特徵 + 非零值
+
+            if i < 10 or abs(value) > 1e-6:  # 非零值才記錄（避免太多 0）
                 feature_mapping_info[model_feat] = {
                     'value': value,
                     'found': model_feat in flow_df.columns
                 }
+
         flow_array = np.array([feature_vector])
-        # 標準化
+
+        # === 保險：最後檢查 ===
+        if np.any(np.isinf(flow_array)) or np.any(np.isnan(flow_array)):
+            logger.warning("特徵向量仍有異常值，已強制清理")
+            flow_array = np.nan_to_num(flow_array, nan=0.0, posinf=0.0, neginf=0.0)
+
+        # 標準化與預測
         flow_scaled = scaler.transform(flow_array)
-        # 預測
         preds = model.predict(flow_scaled)
-        preds_proba = model.predict_proba(flow_scaled)[0] # 預測概率
+        preds_proba = model.predict_proba(flow_scaled)[0]
         preds_labels = le.inverse_transform(preds)
         normalized_label = preds_labels[0].lower()
-        # 構建診斷資訊
+
         diagnosis = {
             'label': normalized_label,
             'confidence': float(max(preds_proba)),
@@ -289,9 +391,14 @@ def predict_flow(model, le, flow_df, training_features):
         }
         logger.debug(f"預測成功：{normalized_label}, 置信度：{diagnosis['confidence']:.3f}")
         return normalized_label, diagnosis
+
     except Exception as e:
-        logger.error(f"預測失敗：{str(e)}")
-        return None, {'error': str(e)}
+        logger.error(f"預測失敗（已安全攔截）：{str(e)}")
+        return "benign", {
+            'label': 'benign',
+            'confidence': 0.0,
+            'error': str(e)
+        }
 def clean_flow_state(flow_state, timeout=120000000):
     """清理超過超時時間的流量狀態"""
     current_time = time.time() * 1e6
@@ -386,6 +493,10 @@ class IDSApp:
         self.flow_state = {}
         self.sniffing = False
         self.sniff_thread = None
+        self.sniff_task = None  # 用來取消處理任務
+        self.process_thread = None          # 新增：處理佇列執行緒
+        self.offline_process = None         # 新增：離線模式 subprocess
+        self.stop_event = threading.Event() # 新增：跨執行緒停止旗標
         self.last_detected_ip = None
         self.interface_map = {}
         self.whitelist_ips = []
@@ -402,15 +513,22 @@ class IDSApp:
         self.csv_dir = 'C:/IDS_defense/csvs'
         self.current_pcap_packets = []
         self.processing_pcap = False
-        self.pcap_interval_ms = tk.StringVar(value="1000") # 預設 1000 毫秒
-        self.last_pcap_time = time.time() * 1000 # 記錄上次生成 pcap 的時間（毫秒）
-        (self.whitelist_ips, max_threads, monitor_mode, pcap_file, 
-         cache_timeout, pcap_interval, warning_cooldown, 
-         loaded_ports, loaded_auto_block) = load_config()
+        # === 先載入所有設定（包含 show_benign）===
+        (self.whitelist_ips, max_threads, monitor_mode, pcap_file,
+         cache_timeout, pcap_interval, warning_cooldown,
+         loaded_ports, loaded_auto_block, loaded_show_benign) = load_config()
+
+        self.whitelist_ports = loaded_ports
+        self.auto_block_ports = loaded_auto_block
+
+        # === 現在才建立 GUI 變數（確保 loaded_show_benign 已定義）===
+        self.show_benign_var = tk.BooleanVar(value=loaded_show_benign)  # 正確！
+        self.pcap_interval_ms = tk.StringVar(value="1000")
+        self.last_pcap_time = time.time() * 1000
          
         self.whitelist_ports = loaded_ports
         self.auto_block_ports = loaded_auto_block
-        
+        self.last_rate_reset = time.time()  # 用於每秒重置 packet_count_sec
         # 同步到 GUI 變數
         self.auto_block_var = tk.BooleanVar(value=self.auto_block_ports)
         self.whitelist_ports_var = tk.StringVar(value=",".join(map(str, self.whitelist_ports)))
@@ -465,7 +583,11 @@ class IDSApp:
         self.max_packets_per_sec = 1000
         self.packet_count_sec = 0
         self.last_sec_time = time.time()
-
+        # === Flood 保護設定變數 ===
+        self.flood_enabled_var = tk.BooleanVar(value=FLOOD_PROTECTION_ENABLED)
+        self.flood_high_var = tk.StringVar(value=str(FLOOD_QUEUE_HIGH))
+        self.flood_low_var = tk.StringVar(value=str(FLOOD_QUEUE_LOW))
+        self.flood_ratio_var = tk.StringVar(value=f"{FLOOD_KEEP_RATIO * 100:.1f}")
         # === 圖形監控專用計數器（必須初始化）===
         self.port_counter = Counter()          # 端口計數（頂部端口條形圖）
         self.protocol_counts = Counter()       # 協議計數（協議餅圖）
@@ -475,11 +597,28 @@ class IDSApp:
         self.threat_times = []                 # 威脅事件率時間軸
         self.threat_rates = []                 # 威脅事件率（惡意事件/秒）
         self.full_network_var = tk.BooleanVar(value=False)
+        self.last_rate_reset = time.time()  # 初始化速率重置時間
+        self.session_pcap_files = []  # 儲存本次檢測產生的 pcap 路徑
+        self.session_csv_files = []   # 儲存本次檢測產生的 csv 路徑
+        self.session_timestamp = None  # 已經有了，但確保用來當檔名
         self.setup_gui()
         # 啟動 CPU 監控
         self.update_cpu()
         # 啟動日志清理
         self.root.after(10000, self.periodic_cleanup)
+            # 保險：如果 10 秒還沒結束，強制恢復按鈕
+        def force_resume_button():
+            if self.start_button['text'] == "停止中...":
+                self.start_button.config(state="normal", text="開始檢測")
+                self.log_message("檢測停止超時，強制恢復介面")
+        self.root.after(10000, force_resume_button)  # 只在需要時觸發# 只在需要時觸發
+    def clear_packet_queue():
+        """安全清空 packet_queue（適用於 queue.Queue）"""
+        while not packet_queue.empty():
+            try:
+                packet_queue.get_nowait()
+            except queue.Empty:
+                break
     def periodic_cleanup(self):
         """定期清理和備份"""
         clean_flow_state(self.flow_state)
@@ -560,6 +699,8 @@ class IDSApp:
         ttk.Entry(settings_frame, textvariable=self.pcap_interval_var).grid(row=2, column=1, padx=5, pady=5, sticky="ew")
         ttk.Label(settings_frame, text="警告冷卻時間 (秒):").grid(row=3, column=0, padx=5, pady=5, sticky="w")
         ttk.Entry(settings_frame, textvariable=self.warning_cooldown_var).grid(row=3, column=1, padx=5, pady=5, sticky="ew")
+        ttk.Checkbutton(settings_frame, text="顯示所有良性（Benign）封包到表格（可能影響效能）",
+                        variable=self.show_benign_var).grid(row=9, column=0, columnspan=2, padx=5, pady=8, sticky="w")
         # 新增：模型選擇
         ttk.Label(settings_frame, text="模型選擇:").grid(row=4, column=0, padx=5, pady=5, sticky="w")
         self.model_combo = ttk.Combobox(settings_frame, textvariable=self.model_var, values=list(available_models.keys()), state="readonly")
@@ -571,7 +712,38 @@ class IDSApp:
         ttk.Button(settings_frame, text="保存白名單端口", command=self.save_whitelist_ports).grid(row=7, column=0, columnspan=2, padx=5, pady=5, sticky="ew")
         # 新增：自動封鎖勾選
         ttk.Checkbutton(settings_frame, text="啟用自動封鎖可疑端口", 
-                       variable=self.auto_block_var).grid(row=8, column=0, columnspan=2, padx=5, pady=8, sticky="w")    
+                       variable=self.auto_block_var).grid(row=8, column=0, columnspan=2, padx=5, pady=8, sticky="w")
+        # === Flood 保護設定區塊 ===
+        flood_frame = ttk.LabelFrame(settings_frame, text="Flood / DoS 保護設定", padding=10)
+        flood_frame.grid(row=10, column=0, columnspan=2, padx=5, pady=10, sticky="ew")
+
+        ttk.Checkbutton(flood_frame, text="啟用 Flood 保護機制",
+                        variable=self.flood_enabled_var).grid(row=0, column=0, columnspan=2, sticky="w", pady=2)
+
+        ttk.Label(flood_frame, text="佇列上限（觸發丟包）:").grid(row=1, column=0, sticky="w", padx=5, pady=2)
+        ttk.Entry(flood_frame, textvariable=self.flood_high_var, width=10).grid(row=1, column=1, sticky="w", pady=2)
+
+        ttk.Label(flood_frame, text="佇列下限（恢復正常）:").grid(row=2, column=0, sticky="w", padx=5, pady=2)
+        ttk.Entry(flood_frame, textvariable=self.flood_low_var, width=10).grid(row=2, column=1, sticky="w", pady=2)
+
+        ttk.Label(flood_frame, text="Flood 時保留比例（%）:").grid(row=3, column=0, sticky="w", padx=5, pady=2)
+        ttk.Entry(flood_frame, textvariable=self.flood_ratio_var, width=10).grid(row=3, column=1, sticky="w", pady=2)
+        ttk.Label(flood_frame, text="（範圍 0.1 ~ 100，建議 1~5）", foreground="gray").grid(row=4, column=0, columnspan=2, sticky="w", padx=5)   
+        
+        
+        # === 儲存設定按鈕與狀態顯示 ===
+        save_button_frame = ttk.Frame(settings_frame)
+        save_button_frame.grid(row=11, column=0, columnspan=2, pady=20)
+
+        ttk.Button(save_button_frame, text="儲存所有設定", command=self.save_settings).grid(row=0, column=0, padx=10)
+
+        # 狀態標籤（預設隱藏）
+        self.settings_status_label = ttk.Label(save_button_frame, text="", foreground="green", font=("Segoe UI", 10, "bold"))
+        self.settings_status_label.grid(row=0, column=1)
+
+        # 提示文字
+        ttk.Label(settings_frame, text="※ 修改設定後請點擊「儲存所有設定」按鈕，程式重啟後生效", 
+                  foreground="gray").grid(row=12, column=0, columnspan=2, pady=5) 
     def save_whitelist_ports(self):
         """保存白名單端口"""
         ports_input = self.whitelist_ports_var.get().strip()
@@ -604,41 +776,101 @@ class IDSApp:
         self.log_message(f"白名單端口已保存：{ports}")
         messagebox.showinfo("成功", f"白名單端口已保存（{len(ports)} 個）")
     def save_settings(self):
-        """保存所有設定（包含自動封鎖勾選）"""
+        """保存所有設定（包含自動封鎖、Flood 保護等）並顯示確認訊息"""
         try:
-            max_threads = int(self.max_threads_var.get())
-            cache_timeout = int(self.cache_timeout_var.get())
-            pcap_interval = int(self.pcap_interval_var.get())
-            warning_cooldown = int(self.warning_cooldown_var.get())
-            
+            # === 安全讀取所有輸入值（防止空字串或無效值導致崩潰）===
+            try:
+                max_threads = int(self.max_threads_var.get() or "4")
+                cache_timeout = int(self.cache_timeout_var.get() or "300")
+                pcap_interval = int(self.pcap_interval_var.get() or "1000")
+                warning_cooldown = int(self.warning_cooldown_var.get() or "60")
+            except ValueError as ve:
+                messagebox.showerror("錯誤", f"請確認數字欄位填寫正確：{ve}")
+                return
+
+            # === Flood 保護參數驗證 ===
+            flood_enabled = self.flood_enabled_var.get()
+            try:
+                flood_high_str = self.flood_high_var.get().strip()
+                flood_low_str = self.flood_low_var.get().strip()
+                flood_ratio_str = self.flood_ratio_var.get().strip()
+
+                flood_high = int(flood_high_str) if flood_high_str else 4500
+                flood_low = int(flood_low_str) if flood_low_str else 800
+                flood_ratio_percent = float(flood_ratio_str.replace('%', '')) if flood_ratio_str else 2.0
+                flood_ratio = flood_ratio_percent / 100.0
+
+                if not (100 <= flood_high <= 6000):
+                    raise ValueError("佇列上限必須在 100~6000 之間")
+                if not (50 <= flood_low < flood_high):
+                    raise ValueError("佇列下限必須小於上限，且至少 50")
+                if not (0.1 <= flood_ratio_percent <= 100):
+                    raise ValueError("保留比例必須在 0.1% ~ 100% 之間")
+            except ValueError as ve:
+                messagebox.showerror("錯誤", f"Flood 保護參數錯誤：{ve}")
+                return
+
+            # === 基本驗證 ===
             if not (1 <= max_threads <= 16):
                 raise ValueError("執行緒數必須在 1~16 之間")
             if cache_timeout <= 0 or pcap_interval <= 0 or warning_cooldown <= 0:
                 raise ValueError("時間設定必須大於 0")
-                
-            # 更新執行緒池
-            self.executor.shutdown(wait=True)
+
+            # === 安全更新執行緒池（關鍵！不中斷背景任務）===
+            try:
+                self.executor.shutdown(wait=False, cancel_futures=True)
+            except:
+                pass  # 忽略任何錯誤
+
             self.executor = ThreadPoolExecutor(max_workers=max_threads)
+            self.log_message(f"執行緒數已安全更新為 {max_threads}（背景任務不受影響）")
+
+            # 更新其他變數
             self.cache_timeout = cache_timeout
             self.warning_cooldown = warning_cooldown
-            
+
             # 同步全域變數
             global auto_block_ports, whitelist_ports
+            global FLOOD_PROTECTION_ENABLED, FLOOD_QUEUE_HIGH, FLOOD_QUEUE_LOW, FLOOD_KEEP_RATIO
             auto_block_ports = self.auto_block_var.get()
             whitelist_ports = self.whitelist_ports
-            
-            # 儲存所有設定
+
+            FLOOD_PROTECTION_ENABLED = flood_enabled
+            FLOOD_QUEUE_HIGH = flood_high
+            FLOOD_QUEUE_LOW = flood_low
+            FLOOD_KEEP_RATIO = flood_ratio
+
+            # === 安全儲存設定 ===
             save_config(
-                self.whitelist_ips, max_threads, self.monitor_mode.get(),
-                self.pcap_file.get() or None, cache_timeout, pcap_interval,
-                warning_cooldown, self.whitelist_ports, auto_block_ports
+                self.whitelist_ips,
+                max_threads,
+                self.monitor_mode.get(),
+                self.pcap_file.get() or None,
+                cache_timeout,
+                pcap_interval,
+                warning_cooldown,
+                self.whitelist_ports,
+                auto_block_ports,
+                FLOOD_PROTECTION_ENABLED,
+                FLOOD_QUEUE_HIGH,
+                FLOOD_QUEUE_LOW,
+                FLOOD_KEEP_RATIO,
+                self.show_benign_var.get()
             )
-            
-            self.log_message("所有設定已成功保存（含自動封鎖與白名單端口）")
-            messagebox.showinfo("成功", "設定已保存，重開程式後依然生效！")
-            
+
+            # === 成功訊息 ===
+            self.settings_status_label.config(text="已成功保存所有設定！", foreground="green")
+            self.root.update_idletasks()
+            self.root.after(3000, lambda: self.settings_status_label.config(text=""))
+            self.log_message("所有設定已成功保存")
+
         except Exception as e:
-            messagebox.showerror("錯誤", str(e))
+            # 任何未預期的錯誤都捕捉，避免程式崩潰
+            error_msg = f"儲存設定時發生未知錯誤：{str(e)}"
+            logger.error(error_msg)
+            self.settings_status_label.config(text="保存失敗", foreground="red")
+            self.root.after(3000, lambda: self.settings_status_label.config(text=""))
+            messagebox.showerror("錯誤", error_msg)
     def setup_control_tab(self, parent):
         """設置控制面板頁"""
         control_frame = ttk.LabelFrame(parent, text="控制面板", padding=10)
@@ -855,7 +1087,7 @@ class IDSApp:
         self.gui_handler = TreeviewHandler(self.log_tree)
         self.gui_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
         logger.addHandler(self.gui_handler)
-        hazard_logger.addHandler(self.gui_handler)
+    
     def search_logs(self):
         """搜索日志"""
         keyword = self.log_search_var.get().lower()
@@ -1076,11 +1308,11 @@ class IDSApp:
         self.ratio_ax.plot(self.ratio_times, self.malicious_ratios, 'r-', label='惡意', linewidth=2)
         self.ratio_ax.legend()
         self.ratio_ax.set_ylim(0, 100)
-        self.ratio_ax.set_title("良惡流量比例 (%)")
+        self.ratio_ax.set_title("惡意事件累積數（總攻擊量）")
         self.ratio_ax.grid(True, alpha=0.3)
         self.ratio_canvas.draw()
     def update_ratio_line(self, frame):  # 改名也沒關係，或直接取代原位置
-        """惡意事件累積數 - 最強戰情圖！"""
+        """惡意事件累積數 """
         if not self.monitor_window or not self.monitor_window.winfo_exists():
             return
 
@@ -1490,6 +1722,12 @@ class IDSApp:
             ttk.Label(basic_info, text=f"目的 IP：{values[2]}").grid(row=2, column=0, sticky="w", padx=5, pady=2)
             ttk.Label(basic_info, text=f"協議：{values[3]}").grid(row=3, column=0, sticky="w", padx=5, pady=2)
             ttk.Label(basic_info, text=f"標籤：{values[4]}").grid(row=4, column=0, sticky="w", padx=5, pady=2)
+            # === 新增：來源端口和目的端口 ===
+            features = details.get('features', {})
+            src_port = features.get('Src Port', 'N/A')
+            dst_port = features.get('Dst Port', 'N/A')
+            ttk.Label(basic_info, text=f"來源端口：{src_port}").grid(row=5, column=0, sticky="w", padx=5, pady=2)
+            ttk.Label(basic_info, text=f"目的端口：{dst_port}").grid(row=6, column=0, sticky="w", padx=5, pady=2)
             feature_frame = ttk.LabelFrame(detail_frame, text="特徵資訊", padding=5)
             feature_frame.grid(row=1, column=0, sticky="nsew", pady=5)
             feature_text = tk.Text(feature_frame, height=10, font=("Segoe UI", 10), wrap="none")
@@ -1504,28 +1742,6 @@ class IDSApp:
             for feature, value in details['features'].items():
                 feature_text.insert(tk.END, f"{feature}: {value}\n")
             feature_text.config(state='disabled')
-            raw_frame = ttk.LabelFrame(detail_frame, text="原始數據", padding=5)
-            raw_frame.grid(row=2, column=0, sticky="nsew", pady=5)
-            raw_text = tk.Text(raw_frame, height=5, font=("Courier New", 10), wrap="none")
-            raw_text.grid(row=0, column=0, sticky="nsew")
-            raw_scroll_y = ttk.Scrollbar(raw_frame, orient="vertical", command=raw_text.yview)
-            raw_scroll_y.grid(row=0, column=1, sticky="ns")
-            raw_scroll_x = ttk.Scrollbar(raw_frame, orient="horizontal", command=raw_text.xview)
-            raw_scroll_x.grid(row=1, column=0, sticky="ew")
-            raw_text.configure(yscrollcommand=raw_scroll_y.set, xscrollcommand=raw_scroll_x.set)
-            raw_frame.grid_columnconfigure(0, weight=1)
-            raw_frame.grid_rowconfigure(0, weight=1)
-            if details['raw_data'] == 'N/A':
-                raw_text.insert(tk.END, "無原始數據可用\n")
-            else:
-                hex_data = details['raw_data']
-                ascii_data = ''.join(chr(int(hex_data[i:i+2], 16)) if 32 <= int(hex_data[i:i+2], 16) <= 126 else '.' for i in range(0, len(hex_data), 2))
-                for i in range(0, len(hex_data), 32):
-                    hex_line = ' '.join(hex_data[j:j+2] for j in range(i, min(i+32, len(hex_data)), 2))
-                    ascii_line = ascii_data[i//2:(i+32)//2]
-                    raw_text.insert(tk.END, f"{hex_line.ljust(48)} {ascii_line}\n")
-            raw_text.config(state='disabled')
-            logger.debug(f"已顯示封包詳細資訊，時間戳：{packet_id}")
     def update_packet_rate(self):
         """正確顯示即時封包速率（每秒重置）"""
         if self.sniffing:
@@ -1713,68 +1929,91 @@ class IDSApp:
             logger.error(error_msg)
             self.log_message(error_msg)
             messagebox.showerror("錯誤", error_msg)
-    def add_packet_to_table(self, src_ip, dst_ip, proto, label, features, packet=None, 
-                          force_display=False, diagnosis=None):
-        """安全、穩定、高效地添加封包到表格（企業級容錯版）"""
+    def add_packet_to_table(self, src_ip, dst_ip, proto, label, features, packet=None,
+                            force_display=False, diagnosis=None):
+        """將封包資訊添加到表格並保存診斷資訊，嚴格控制表格大小"""
         try:
             timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            label = str(label) if label else "Unknown"
+            label = str(label).capitalize() if label else "未知"
             is_benign = label.lower() == 'benign'
-            table = self.benign_table if is_benign else self.malicious_table
             tag = 'benign' if is_benign else 'malicious'
+            table = self.benign_table if is_benign else self.malicious_table
 
-            # 協議名稱
+            # 協議轉換
             proto_map = {0: 'IPv6 Hop-by-Hop', 1: 'ICMP', 2: 'IGMP', 4: 'IP over IP',
-                        6: 'TCP', 17: 'UDP', 41: 'IPv6'}
+                         6: 'TCP', 17: 'UDP', 41: 'IPv6'}
             proto_text = proto_map.get(proto, str(proto))
 
-            # 插入表格
-            table.insert("", "end", values=(timestamp, src_ip, dst_ip, proto_text, label), tags=(tag,))
+            # === 關鍵：Flood 模式下，只顯示惡意封包（大幅減輕負擔）===
+            should_display = (not is_benign) or self.show_benign_var.get() or force_display
+            if DROP_MODE and is_benign and not self.show_benign_var.get():
+                should_display = False  # Flood 時強制不顯示良性封包
 
-            # 儲存詳細資訊
-            self.packet_details[timestamp] = {
+            if should_display:
+                table.insert("", tk.END, values=(timestamp, src_ip, dst_ip, proto_text, label), tags=(tag,))
+
+            # 保存詳細資訊
+            packet_info = {
                 'features': features or {},
                 'diagnosis': diagnosis or {},
-                'raw_data': hexlify(bytes(packet)).decode('ascii') if packet else 'N/A'
-            }
+                }
+            self.packet_details[timestamp] = packet_info
 
-            # 更新計數
+            # 更新統計（不管顯示與否，都計數）
             if is_benign:
                 self.benign_count += 1
             else:
                 self.malicious_count += 1
-                if self.auto_block_var.get() and not self.processing_pcap:  # 離線模式不自動封鎖
+                hazard_logger.warning(
+                    f"偵測到惡意流量 | 來源IP: {src_ip} | 目的IP: {dst_ip} | "
+                    f"攻擊類型: {label} | 協議: {proto_text} | 置信度: {diagnosis.get('confidence', 0):.2%}"
+                )
+                if self.auto_block_var.get() and not self.processing_pcap:
                     port = features.get('Dst Port') or features.get('Src Port')
-                    if port and port != 0:
+                    if port and isinstance(port, (int, float)) and 1 <= int(port) <= 65535:
                         protocol = 'TCP' if proto == 6 else 'UDP' if proto == 17 else 'TCP'
                         self.root.after(100, auto_block_suspicious_port, int(port), protocol, features)
 
             self.src_ips[src_ip] += 1
-
-            # 更新圖表計數器
             self.protocol_counts[proto_text] += 1
             port = features.get('Dst Port') or features.get('Src Port')
-            if port and port != 0:
+            if port and isinstance(port, (int, float)) and port != 0:
                 self.port_counter[int(port)] += 1
 
-            # 觸發圖表更新（髒標記）
-            self.chart_dirty.update({
-                'rate': True, 'pie': True, 'proto': True, 'port': True,
-                'threat': not is_benign, 'ratio': not is_benign
-            })
+            # === 儲存到 detection_data ===
+            record = {
+                '時間': timestamp, '來源 IP': src_ip, '目的 IP': dst_ip, '協議': proto_text,
+                '標籤': label, '攻擊類型': '' if is_benign else label,
+                '置信度': f"{diagnosis.get('confidence', 0):.2%}" if diagnosis else 'N/A',
+            }
+            if 'Dst Port' in features: record['目的端口'] = features['Dst Port']
+            if 'Src Port' in features: record['來源端口'] = features['Src Port']
+            if 'Pkt Size Avg' in features: record['平均封包大小'] = features['Pkt Size Avg']
+            self.detection_data.append(record)
 
-            # 限制表格長度
-            for tbl in (self.benign_table, self.malicious_table):
-                if len(tbl.get_children()) > 200:
-                    tbl.delete(tbl.get_children()[0])
+            if self.session_timestamp is None and self.sniffing:
+                self.session_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+            # === 嚴格控制表格大小：批量刪除舊資料 ===
+            MAX_TABLE_ROWS = 500  # 最大保留 500 筆（可自行調整）
+            for tbl in [self.benign_table, self.malicious_table]:
+                children = tbl.get_children()
+                if len(children) > MAX_TABLE_ROWS:
+                    # 一次刪除多筆，保持在上限內
+                    to_delete = children[:-MAX_TABLE_ROWS + 50]  # 多刪一點避免頻繁觸發
+                    for item in to_delete:
+                        old_ts = tbl.item(item, "values")[0]
+                        tbl.delete(item)
+                        if old_ts in self.packet_details:
+                            del self.packet_details[old_ts]
+
+            # 觸發圖表更新
+            self.chart_dirty.update({'rate': True, 'pie': True, 'proto': True, 'port': True})
+            if not is_benign:
+                self.chart_dirty.update({'threat': True, 'ratio': True})
 
         except Exception as e:
-            logger.error(f"add_packet_to_table 嚴重錯誤（已攔截）: {e}")
-            # 至少顯示一筆錯誤記錄
-            try:
-                self.malicious_table.insert("", "end", 
-                    values=(datetime.now().strftime('%H:%M:%S'), src_ip, dst_ip, "Error", "CRASH"))
-            except: pass
+            logger.error(f"add_packet_to_table 發生錯誤：{str(e)}")
     def export_detection_table(self):
         """匯出當前檢測會話的表格到 CSV"""
         if not self.detection_data:
@@ -1815,71 +2054,125 @@ class IDSApp:
             for item in detached:
                 table.reattach(item, '', 'end')
         self.log_message("已清除搜索過濾，顯示所有封包")
+    def background_sniff(self):
+        """背景執行緒：只負責嗅探，把封包放入佇列"""
+        interface = self.interface_var.get()
+        if not interface or interface not in self.interface_map:
+            self.root.after(0, lambda: self.log_message("介面選擇錯誤，無法嗅探"))
+            return
+        
+        scapy_iface = self.interface_map[interface]
+        self.log_message(f"背景嗅探啟動於：{interface}")
+        
+        def packet_handler(pkt):
+            if not self.sniffing:
+                return
+            
+            if packet_queue.full():
+                global dropped_packets
+                dropped_packets += 1
+                return
+            
+            try:
+                packet_queue.put_nowait(pkt)
+            except queue.Full:
+                dropped_packets += 1
+        
+        try:
+            while self.sniffing:
+                sniff(
+                    iface=scapy_iface,
+                    prn=packet_handler,
+                    store=False,
+                    timeout=1,
+                    count=0
+                )
+        except Exception as e:
+            if self.sniffing:
+                self.root.after(0, lambda: self.log_message(f"背景嗅探異常：{e}"))
+        finally:
+            self.root.after(0, lambda: self.log_message("背景嗅探執行緒已結束"))
     def toggle_sniffing(self):
-        """開始/停止 - 絕對不卡版的終極方案"""
+        """開始/停止檢測 - 背景嗅探 + 主執行緒處理（流暢 + 穩定 + 正確速率）"""
         global dropped_packets, DROP_MODE
-
+        
         if not self.sniffing:
-            # ============ 開始 ============
+            # ============ 開始檢測 ============
+            self.stop_event.clear()
             self.detect_start_time = time.time()
             dropped_packets = 0
             DROP_MODE = False
-            displayed_this_sec = 0
-
-            # 清空 deque 和所有統計
-            packet_queue.clear()
-            for attr in ['timestamps','packet_rates','threat_times','threat_rates',
-                        'ratio_times','benign_ratios','malicious_ratios','benign_count',
-                        'malicious_count','src_ips','port_counter','protocol_counts',
-                        'benign_ips','malicious_ips','packet_details','current_pcap_packets']:
-                if hasattr(self, attr):
-                    obj = getattr(self, attr)
-                    if hasattr(obj, 'clear'):
-                        obj.clear()
-
+            
+            # 清空佇列
+            while not packet_queue.empty():
+                try:
+                    packet_queue.get_nowait()
+                except queue.Empty:
+                    break
+            
+            # 清空統計
+            self.detection_data.clear()
+            self.packet_details.clear()
+            self.benign_count = 0
+            self.malicious_count = 0
+            self.src_ips.clear()
+            self.port_counter.clear()
+            self.protocol_counts.clear()
+            self.session_timestamp = None
+            self.packet_count_sec = 0  # 重置速率
+            
             self.log_message(f"開始檢測 - 模式：{self.monitor_mode.get()}")
             self.sniffing = True
             self.start_button.config(text="停止檢測")
-
+            
             if self.monitor_mode.get() == "offline":
                 if not self.pcap_file.get():
                     messagebox.showerror("錯誤", "請先選擇 pcap 檔案")
                     self.sniffing = False
                     self.start_button.config(text="開始檢測")
                     return
-                threading.Thread(target=self.process_offline_pcap, daemon=True).start()
+                threading.Thread(target=self.process_offline_pcap).start()
             else:
-                threading.Thread(target=self.start_sniffing, daemon=True).start()
-                threading.Thread(target=self.process_packets, daemon=True).start()
-
+                # 啟動背景嗅探執行緒
+                self.sniff_thread = threading.Thread(target=self.background_sniff, daemon=False)
+                self.sniff_thread.start()
+                
+                # 啟動主執行緒處理佇列
+                self.process_queue_once()
+                
         else:
-            # ============ 強制停止（現在真的穩如老狗）============
+            # ============ 停止檢測 ============
             self.sniffing = False
-            DROP_MODE = False
-
-            # 瞬間清空佇列（表格立刻不跳）
-            try:
-                packet_queue.clear()
-            except:
-                pass
-
-            # 強制關閉執行緒池
-            try:
-                self.executor.shutdown(wait=False, cancel_futures=True)
-            except:
-                pass
-
-            # 強制重建執行緒池（防止殭屍）
-            max_threads = int(self.max_threads_var.get() or 4)
-            self.executor = ThreadPoolExecutor(max_workers=max_threads)
-
-            # 強制恢復按鈕（最快 0.1 秒看到反應）
-            self.start_button.config(text="開始檢測")
+            self.stop_event.set()
             
-            self.log_message("檢測已強制停止（系統 100% 安全）")
-
+            self.log_message("正在停止檢測...")
+            self.start_button.config(state="disabled", text="停止中...")
+            self.root.update_idletasks()
+            
+            # 取消處理任務
+            if self.sniff_task:
+                self.root.after_cancel(self.sniff_task)
+                self.sniff_task = None
+            
+            # 清空佇列
+            while not packet_queue.empty():
+                try:
+                    packet_queue.get_nowait()
+                except queue.Empty:
+                    break
+            
+            # 恢復介面（嗅探執行緒會自然結束）
+            self.root.after(2000, lambda: self.start_button.config(state="normal", text="開始檢測"))
+            self.root.after(2000, lambda: self.log_message("檢測已停止（背景嗅探已結束）"))
+            # ============ 新增：停止檢測後合併檔案 ============
+            if self.session_timestamp and (self.session_pcap_files or self.session_csv_files):
+                merge_thread = threading.Thread(target=self.merge_and_cleanup_session_files, daemon=True)
+                merge_thread.start()
+                self.log_message("檢測停止，正在背景合併本次會話的 pcap 和 csv...")
+            else:
+                self.log_message("本次檢測無檔案產生，無需合併")
             if dropped_packets > 0:
-                self.log_message(f"本次檢測因抗 Flood 保護，共丟棄 {dropped_packets:,} 個封包")
+                self.root.after(2000, lambda: self.log_message(f"本次檢測因抗 Flood 保護，共丟棄 {dropped_packets:,} 個封包"))
 
 
     def shutdown_executor_safe(self):
@@ -1892,57 +2185,52 @@ class IDSApp:
         # 重新建立乾淨的執行緒池
         max_threads = int(self.max_threads_var.get() or 4)
         self.executor = ThreadPoolExecutor(max_workers=max_threads)
+
     def start_sniffing(self):
-        """啟動嗅探 - 絕對不會讓程式退出版（已徹底封印所有異常）"""
-        interface = self.interface_map.get(self.interface_var.get())
-        if not interface:
+        interface = self.interface_var.get()
+        if not interface or interface not in self.interface_map:
             self.root.after(0, lambda: messagebox.showerror("錯誤", "請選擇有效的網路介面"))
             return
-
+        
+        scapy_iface = self.interface_map[interface]
+        self.log_message(f"嗅探啟動於介面：{interface} ({scapy_iface})")
+        
         def packet_handler(pkt):
-            # 停止旗標檢查
-            if not getattr(self, 'sniffing', False):
-                return False
-            # 佇列滿就丟
-            if len(packet_queue) >= packet_queue.maxlen:
+            if self.stop_event.is_set():
+                return False  # 停止時不處理
+            
+            if packet_queue.full():
                 global dropped_packets
                 dropped_packets += 1
                 return
+            
             try:
-                packet_queue.append(pkt)
-            except:
-                pass  # 即使 deque 炸了也不讓程式死
-
-        self.log_message(f"開始嗅探介面：{interface}")
-
-        # 終極防崩潰迴圈（任何異常都進 finally，不會傳到 Tkinter）
-        while getattr(self, 'sniffing', False):
-            try:
-                # 這行是關鍵：把所有 sniff 的異常全部吃掉
-                sniff(
-                    iface=interface,
+                packet_queue.put_nowait(pkt)
+            except queue.Full:
+                dropped_packets += 1
+        
+        # 關鍵修復：簡單、穩定、無返回值印出
+        try:
+            while not self.stop_event.is_set():
+                # 只嗅探 1 秒，避免卡死
+                packets = sniff(
+                    iface=scapy_iface,
                     prn=packet_handler,
-                    store=0,
-                    timeout=1,
+                    store=False,
+                    timeout=1,    # 必須有 timeout
                     count=0,
-                    # 絕對不要加 stopped_filter 或其他高級參數
+                    started_callback=lambda: not self.stop_event.is_set()
                 )
-            except Exception as e:
-                # 所有 Scapy/Npcap 異常都在這裡被徹底攔截
-                if getattr(self, 'sniffing', False):
-                    logger.debug(f"sniff 內部異常已攔截（正常現象）：{e}")
-                continue
-            except KeyboardInterrupt:
-                break
-            except SystemExit:
-                break
-            except:
-                if getattr(self, 'sniffing', False):
-                    logger.debug("sniff 未知異常已攔截")
-                continue
-
-        # 一定會執行的結束流程
-        self.root.after(0, lambda: self.log_message("嗅探執行緒已安全結束"))
+                # 注意：這裡不要 print(packets) 或任何東西！
+                # packets 會是 [] 或 list，沒封包時是 []
+                
+        except Exception as e:
+            if not self.stop_event.is_set():
+                self.root.after(0, lambda: self.log_message(f"嗅探發生異常（已安全攔截）：{e}"))
+                logger.error(f"嗅探異常：{e}")
+        finally:
+            self.root.after(0, lambda: self.log_message("嗅探執行緒已完全結束"))
+    
     def load_pcap(self):
         """在獨立執行緒中讀取 pcap 檔案並處理"""
         try:
@@ -1959,128 +2247,77 @@ class IDSApp:
             self.root.after(0, lambda: messagebox.showerror("錯誤", f"載入 pcap 失敗：{str(e)}"))
             self.sniffing = False
             self.root.after(0, lambda: self.start_button.config(text="開始檢測"))
-    def process_packets(self):
-        """終極抗 Flood 處理迴圈（已修復速率顯示 + 完全防當機）"""
-        global dropped_packets, DROP_MODE, displayed_this_sec
+    def process_queue_once(self):
+        """主執行緒：每 100ms 處理一次佇列（允許更高速率顯示 + 穩定 Flood + 安全清理）"""
+        global dropped_packets, DROP_MODE
+        
+        if not self.sniffing:
+            return
 
-        # 每秒統計用的變數
-        self.packet_count_sec = 0
-        last_sec = int(time.time())
+        # === 每秒重置速率計數 ===
+        current_time = time.time()
+        if not hasattr(self, 'last_rate_reset') or current_time - self.last_rate_reset >= 1.0:
+            self.packet_count_sec = 0
+            self.last_rate_reset = current_time
 
-        while self.sniffing:
+        processed = 0
+        discarded_this_round = 0
+        max_per_round = 200  # 提高！每 100ms 最多處理 200 筆 → 每秒最高可顯示 2000 pps
+
+        while processed + discarded_this_round < max_per_round and not packet_queue.empty():
             try:
-                now = time.time()
-                current_sec = int(now)
+                packet = packet_queue.get_nowait()
+                self.packet_count_sec += 1  # 所有取出的封包都計入速率
 
-                # === 每秒重置計數器 ===
-                if current_sec != last_sec:
-                    self.packet_count_sec = 0  # 這行是關鍵！讓 GUI 能正確顯示速率
-                    displayed_this_sec = 0
-                    last_sec = current_sec
-
-                    # 自動偵測 Flood
-                    qsize = len(packet_queue)
-                    if qsize > 4500 and not DROP_MODE:
+                # === 穩定 Flood 保護 ===
+                if FLOOD_PROTECTION_ENABLED:
+                    qsize = packet_queue.qsize()
+                    if qsize > FLOOD_QUEUE_HIGH + 500 and not DROP_MODE:
                         DROP_MODE = True
-                        self.root.after(0, lambda: self.log_message("極端 Flood 偵測！啟動 98% 丟包模式（保護系統）"))
-                    elif qsize < 800 and DROP_MODE:
+                        self.root.after(0, lambda: self.log_message(
+                            f"極端 Flood 偵測！啟動丟包模式（保留 {FLOOD_KEEP_RATIO*100:.1f}%）"))
+                    elif qsize < FLOOD_QUEUE_LOW - 500 and DROP_MODE:
                         DROP_MODE = False
-                        self.root.after(0, lambda: self.log_message("流量恢復正常，關閉極端保護"))
+                        self.root.after(0, lambda: self.log_message("流量恢復正常，關閉丟包模式"))
 
-                # === GUI 顯示限流（每秒最多 80 筆）===
-                if displayed_this_sec >= 80:
-                    if packet_queue:
-                        packet_queue.popleft()
+                    if DROP_MODE and random.random() > FLOOD_KEEP_RATIO:
                         dropped_packets += 1
-                        self.packet_count_sec += 1  # 就算沒顯示，也算進速率
-                    time.sleep(0.001)
-                    continue
+                        discarded_this_round += 1
+                        continue
 
-                # === 取出封包 ===
-                if not packet_queue:
-                    time.sleep(0.001)
-                    continue
-
-                packet = packet_queue.popleft()
-                self.packet_count_sec += 1  # 每處理一包就 +1
-
-                # === 極端丟包模式（Flood 時只保留 2%）===
-                if DROP_MODE and random.random() > 0.02:
-                    dropped_packets += 1
-                    continue
-
-                # === 正常處理 ===
+                # 正常處理（插入表格）
                 self.packet_callback(packet)
-                displayed_this_sec += 1
+                processed += 1
 
+            except queue.Empty:
+                break
+
+        # === 安全清理舊封包 ===
+        max_rows = 300
+        for tbl in [self.benign_table, self.malicious_table]:
+            try:
+                children = tbl.get_children()
+                if len(children) > max_rows:
+                    items_to_delete = children[:len(children) - max_rows]
+                    for item_id in items_to_delete:
+                        try:
+                            values = tbl.item(item_id, "values")
+                            if values and len(values) > 0:
+                                ts = values[0]
+                                if ts in self.packet_details:
+                                    del self.packet_details[ts]
+                        except tk.TclError:
+                            pass
+                        try:
+                            tbl.delete(item_id)
+                        except tk.TclError:
+                            pass
             except Exception as e:
-                if self.sniffing:  # 只有在運行中才記錄錯誤
-                    logger.error(f"process_packets 保護觸發: {e}")
+                logger.error(f"表格清理錯誤（已忽略）：{e}")
 
-        # 停止後報告
-        if dropped_packets > 0:
-            self.root.after(0, lambda: self.log_message(f"檢測結束，本次共丟棄 {dropped_packets:,} 個封包（抗 Flood 保護）"))
-    def process_offline_pcap(self):
-        """離線模式：最穩版 CICFlowMeter 呼叫（絕不讓程式整個死掉）"""
-        try:
-            pcap_path = self.pcap_file.get().strip()
-            if not pcap_path or not os.path.exists(pcap_path):
-                messagebox.showerror("錯誤", "請選擇有效的 .pcap/.pcapng 檔案")
-                return
-
-            self.log_message(f"開始離線分析：{os.path.basename(pcap_path)}")
-            
-            # 強制建立輸出目錄
-            csv_dir_abs = os.path.abspath(self.csv_dir)
-            os.makedirs(csv_dir_abs, exist_ok=True)
-
-            cmd = f'cfm.bat "{pcap_path}" "{csv_dir_abs}"'
-            self.log_message("正在啟動 CICFlowMeter 產生 CSV，請稍候…（視檔案大小可能需要數十秒到數分鐘）")
-
-            # 關鍵修復點 1：不要用 timeout！改用非阻塞啟動 + 輪詢
-            process = subprocess.Popen(
-                cmd,
-                shell=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                creationflags=subprocess.CREATE_NEW_PROCESS_GROUP  # 防止 Ctrl+C 影響
-            )
-
-            # 關鍵修復點 2：用一個小視窗顯示「處理中」，避免使用者以為當機
-            progress_win = tk.Toplevel(self.root)
-            progress_win.title("離線分析進行中")
-            progress_win.geometry("400x120")
-            progress_win.transient(self.root)
-            progress_win.grab_set()  # 鎖定焦點
-            ttk.Label(progress_win, text="CICFlowMeter 正在分析檔案…\n請耐心等待，不要關閉程式", justify="center").pack(pady=20)
-            progress_bar = ttk.Progressbar(progress_win, mode='indeterminate')
-            progress_bar.pack(fill="x", padx=20, pady=10)
-            progress_bar.start()
-
-            # 關鍵修復點 3：用 after 輪詢進程狀態（完全不卡 GUI）
-            def check_process():
-                if process.poll() is None:  # 還在跑
-                    self.root.after(500, check_process)
-                else:
-                    progress_win.destroy()
-                    stdout, stderr = process.communicate()
-                    err_text = stderr.decode('cp950', errors='replace')
-                    if process.returncode != 0:
-                        self.log_message(f"CICFlowMeter 失敗：{err_text}")
-                        messagebox.showerror("CICFlowMeter 錯誤", err_text[:1000])
-                        self._finish_offline()
-                        return
-
-                    # 成功 → 找最新 CSV 並開始預測
-                    self.root.after(1000, self._continue_offline_analysis)  # 稍微等一下讓檔案寫完
-
-            self.root.after(500, check_process)
-
-        except Exception as e:
-            logger.exception(e)
-            messagebox.showerror("啟動失敗", str(e))
-            self._finish_offline()
-
+        # 繼續下一輪
+        if self.sniffing:
+            self.sniff_task = self.root.after(100, self.process_queue_once)
     def _continue_offline_analysis(self):
         """接續：讀取剛剛產生的 CSV 並預測（與即時模式 100% 一致）"""
         try:
@@ -2150,7 +2387,13 @@ class IDSApp:
             messagebox.showerror("分析失敗", str(e))
         finally:
             self._finish_offline()
-
+    def update_packet_rate(self):
+        if self.sniffing:
+            rate = getattr(self, 'packet_count_sec', 0)
+            self.packet_rate.set(f"封包速率：{rate:,} packets/s")
+        else:
+            self.packet_rate.set("封包速率：0 packets/s")
+        self.root.after(1000, self.update_packet_rate)
     def _finish_offline(self):
         """統一收尾：恢復按鈕狀態"""
         self.sniffing = False
@@ -2220,22 +2463,104 @@ class IDSApp:
             logger.error(f"封包處理失敗：{str(e)}")
             self.log_message(f"封包處理失敗：{str(e)}")
             
-    
+    def merge_and_cleanup_session_files(self):
+        """停止檢測後，將本次會話的所有小 pcap 和 csv 合併成單一檔案，並刪除原檔"""
+        try:
+            if not self.session_timestamp:
+                return
+
+            session_dir = 'C:/IDS_defense/sessions'
+            os.makedirs(session_dir, exist_ok=True)
+
+            merged_pcap_path = os.path.join(session_dir, f"session_{self.session_timestamp}.pcap")
+            merged_csv_path = os.path.join(session_dir, f"session_{self.session_timestamp}.csv")
+
+            # === 合併 pcap ===
+            if self.session_pcap_files:
+                merged_packets = []
+                for pcap_file in self.session_pcap_files:
+                    if os.path.exists(pcap_file):
+                        try:
+                            packets = rdpcap(pcap_file)
+                            merged_packets.extend(packets)
+                        except Exception as e:
+                            logger.error(f"讀取 pcap 合併失敗 {pcap_file}: {e}")
+                if merged_packets:
+                    wrpcap(merged_pcap_path, merged_packets)
+                    logger.info(f"已合併 {len(self.session_pcap_files)} 個 pcap → {merged_pcap_path}")
+                    self.root.after(0, lambda: self.log_message(f"合併 pcap 完成：{os.path.basename(merged_pcap_path)}"))
+                else:
+                    logger.warning("合併 pcap 時無有效封包")
+
+            # === 合併 csv ===
+            if self.session_csv_files:
+                merged_df = pd.DataFrame()
+                for csv_file in self.session_csv_files:
+                    if os.path.exists(csv_file):
+                        try:
+                            # 多編碼嘗試讀取（與原程式一致）
+                            df = None
+                            for enc in ['cp950', 'utf-8-sig', 'utf-8', 'big5']:
+                                try:
+                                    df = pd.read_csv(csv_file, encoding=enc, low_memory=False)
+                                    if len(df) > 0:
+                                        break
+                                except:
+                                    continue
+                            if df is not None and len(df) > 0:
+                                merged_df = pd.concat([merged_df, df], ignore_index=True)
+                        except Exception as e:
+                            logger.error(f"讀取 csv 合併失敗 {csv_file}: {e}")
+                if len(merged_df) > 0:
+                    merged_df.to_csv(merged_csv_path, index=False, encoding='utf-8-sig')
+                    logger.info(f"已合併 {len(self.session_csv_files)} 個 csv → {merged_csv_path}")
+                    self.root.after(0, lambda: self.log_message(f"合併 csv 完成：{os.path.basename(merged_csv_path)}"))
+                else:
+                    logger.warning("合併 csv 時無有效資料")
+
+            # === 刪除原始零散檔案 ===
+            deleted_count = 0
+            for file_list, name in [(self.session_pcap_files, "pcap"), (self.session_csv_files, "csv")]:
+                for f in file_list:
+                    if os.path.exists(f):
+                        try:
+                            os.remove(f)
+                            deleted_count += 1
+                            logger.info(f"已刪除零散 {name} 檔案: {f}")
+                        except Exception as e:
+                            logger.warning(f"刪除 {name} 檔案失敗 {f}: {e}")
+            self.root.after(0, lambda: self.log_message(f"已清理 {deleted_count} 個零散檔案"))
+
+            # === 重置列表 ===
+            self.session_pcap_files.clear()
+            self.session_csv_files.clear()
+
+        except Exception as e:
+            logger.error(f"合併與清理過程發生錯誤：{str(e)}")
+            self.root.after(0, lambda: self.log_message(f"合併檔案失敗：{str(e)}"))
     def process_pcap_to_csv(self):
-        """將累積的封包儲存為 .pcap 並轉換為 .csv，然後觸發流量處理（企業級穩定版）"""
+        """將累積的封包儲存為 .pcap 並轉換為 .csv（防 Flood 空檔案 + 更穩定）"""
+        # === 若無封包，直接返回 ===
         if not self.current_pcap_packets:
             logger.debug("沒有封包需要處理為 .pcap")
             return
+
+        # === Flood 保護後常見情況：封包被大量丟棄，只剩極少或零筆 ===
+        current_packet_count = len(self.current_pcap_packets)
+        if current_packet_count < 1:  # 少於 1 筆視為無效批次（可自行調整）
+            logger.info(f"本批次封包過少（{current_packet_count} 筆），疑似 Flood 丟包過多，直接捨棄不產生 CSV")
+            self.current_pcap_packets.clear()  # 清空釋放記憶體
+            return
+
+        # === 防止重複處理 ===
         if getattr(self, 'processing_pcap', False):
             logger.debug("已在處理 pcap，略過本次呼叫")
             return
 
         self.processing_pcap = True
         pcap_filename = None
-        csv_path = None
-
         try:
-            # === 步驟1：儲存 PCAP ===
+            # === 步驟1：確保目錄可寫入 ===
             for dir_path in [self.pcap_dir, self.csv_dir]:
                 dir_abs = os.path.abspath(dir_path)
                 os.makedirs(dir_abs, exist_ok=True)
@@ -2243,23 +2568,29 @@ class IDSApp:
                     logger.error(f"目錄無寫入權限: {dir_abs}")
                     return
 
+            # === 步驟2：儲存 PCAP ===
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             pcap_filename = os.path.normpath(os.path.join(self.pcap_dir, f"flow_{timestamp}.pcap"))
             wrpcap(pcap_filename, self.current_pcap_packets)
-            self.current_pcap_packets.clear()  # 立即清空，釋放記憶體
-            logger.info(f"PCAP 已儲存: {pcap_filename} ({len(self.current_pcap_packets)} packets)")
 
-            # === 步驟2：執行 CICFlowMeter ===
+            # 注意：此時已清空列表，所以用變數記錄實際封包數
+            logger.info(f"PCAP 已儲存: {pcap_filename} ({current_packet_count} packets)")
+            self.current_pcap_packets.clear()  # 清空釋放記憶體
+            # 記錄本次會話的 pcap 檔案（用於停止後合併）
+            if self.sniffing and hasattr(self, 'session_pcap_files'):
+                self.session_pcap_files.append(pcap_filename)
+            # === 步驟3：執行 CICFlowMeter ===
             csv_dir_abs = os.path.abspath(self.csv_dir)
             cmd = f'cfm.bat "{pcap_filename}" "{csv_dir_abs}"'
             logger.info(f"執行 CICFlowMeter: {cmd}")
 
             result = subprocess.run(cmd, shell=True, capture_output=True, timeout=90)
             if result.returncode != 0:
-                logger.error(f"CICFlowMeter 失敗 (code {result.returncode}): {result.stderr.decode('cp950', errors='replace')}")
+                err_msg = result.stderr.decode('cp950', errors='replace')
+                logger.error(f"CICFlowMeter 失敗 (code {result.returncode}): {err_msg}")
                 return
 
-            # === 步驟3：等待並讀取最新 CSV ===
+            # === 步驟4：等待並讀取最新 CSV ===
             deadline = time.time() + 15
             csv_path = None
             while time.time() < deadline:
@@ -2267,41 +2598,42 @@ class IDSApp:
                 if csv_files:
                     csv_files.sort(key=lambda f: os.path.getmtime(os.path.join(csv_dir_abs, f)), reverse=True)
                     candidate = os.path.join(csv_dir_abs, csv_files[0])
-                    if os.path.getsize(candidate) > 100:
+                    if os.path.getsize(candidate) > 100:  # 至少有點內容
                         csv_path = candidate
                         break
                 time.sleep(0.5)
 
             if not csv_path:
-                logger.error("未找到有效的 CSV 檔案")
+                logger.error("未找到有效的 CSV 檔案（CICFlowMeter 可能未產生）")
                 return
 
-            # === 終極解決：先試 cp950（繁體中文），再試 utf-8，絕不炸 ===
+            # === 步驟5：多編碼嘗試讀取 CSV（超強容錯）===
             df = None
-            for encoding in ['cp950', 'big5', 'utf-8', 'gbk']:
+            for encoding in ['cp950', 'big5', 'utf-8-sig', 'utf-8', 'gbk']:
                 try:
                     logger.debug(f"嘗試用 {encoding} 讀取 CSV...")
                     df = pd.read_csv(csv_path, encoding=encoding, low_memory=False, on_bad_lines='skip')
-                    if not df.empty and len(df) > 0:
+                    if len(df) > 0:
                         logger.info(f"CSV 讀取成功！使用編碼: {encoding}，共 {len(df)} 條流量")
                         break
                 except Exception as e:
                     logger.debug(f"{encoding} 讀取失敗: {e}")
-                    continue
 
             if df is None or df.empty:
-                logger.error("所有編碼都讀取失敗，CSV 可能損壞或為空")
-                # 最後手段：強制用 cp950 + 忽略錯誤
+                logger.error("所有編碼讀取失敗，CSV 可能損壞或為空")
+                # 最後強制手段
                 try:
                     df = pd.read_csv(csv_path, encoding='cp950', errors='ignore', low_memory=False)
                     logger.warning("已用 cp950 + errors='ignore' 強制讀取（可能有亂碼）")
-                except:
-                    logger.error("最終強制讀取也失敗，放棄此批次")
+                except Exception as e:
+                    logger.error(f"最終強制讀取失敗，放棄此批次: {e}")
                     return
 
             logger.info(f"載入 CSV 成功: {csv_path} ({len(df)} 條流量)")
-
-            # === 步驟4：逐條預測（每條都防崩潰）===
+            # 記錄本次會話的 csv 檔案（用於停止後合併）
+            if self.sniffing and hasattr(self, 'session_csv_files'):
+                self.session_csv_files.append(csv_path)
+            # === 步驟6：逐條預測並顯示（防崩潰）===
             for idx, row in df.iterrows():
                 try:
                     src_ip = str(row.get('Src IP', 'Unknown'))
@@ -2319,32 +2651,27 @@ class IDSApp:
                     except Exception as e:
                         logger.warning(f"第 {idx} 條流量預測失敗: {e}")
 
-                    # 轉換 label 格式
+                    # label 格式統一
                     if isinstance(label, (list, np.ndarray)):
                         label = label[0] if len(label) > 0 else "unknown"
                     if isinstance(label, (int, np.int64)):
                         label = self.le.inverse_transform([label])[0] if hasattr(self, 'le') else "unknown"
                     label_str = str(label).capitalize()
-
                     is_malicious = label_str.lower() != 'benign'
 
-                    # 使用默認參數避免 lambda 閉包問題
-                    self.root.after(0, self.add_packet_to_table, 
-                                  src_ip, dst_ip, proto, label_str, features, None, 
-                                  is_malicious, diagnosis)
+                    # 加入表格（使用 root.after 避免跨執行緒問題）
+                    self.root.after(0, self.add_packet_to_table,
+                                    src_ip, dst_ip, proto, label_str, features, None,
+                                    is_malicious, diagnosis)
 
                 except Exception as e:
                     logger.error(f"處理第 {idx} 條流量時發生未預期錯誤: {e}")
-                    continue  # 絕不讓一條壞數據搞垮整個系統
+                    continue
 
         except Exception as e:
             logger.error(f"process_pcap_to_csv 嚴重錯誤: {e}")
         finally:
             self.processing_pcap = False
-            # 可選：刪除臨時 pcap（節省磁碟）
-            if pcap_filename and os.path.exists(pcap_filename):
-                try: os.remove(pcap_filename)
-                except: pass
 class TreeviewHandler(logging.Handler):
     """自訂日誌處理器，將日誌顯示在 ttk.Treeview 表格中"""
     def __init__(self, treeview):

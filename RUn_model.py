@@ -425,32 +425,58 @@ def auto_block_suspicious_port(port, protocol='TCP', features=None):
         log_stats['top_types'][f"Port Block {port}"] += 1
     return success
 def block_port_local(port, protocol='TCP'):
-    """在本機使用 netsh 封鎖指定端口"""
+    """在本機使用 PowerShell 封鎖指定端口（Inbound）"""
     with lock:
         try:
             rule_name = f"IDS_Block_Port_{port}_{protocol}"
-            cmd = f'netsh advfirewall firewall add rule name="{rule_name}" dir=in action=block localport={port} protocol={protocol}'
-            result = subprocess.run(cmd, shell=True, capture_output=True, text=True, encoding='utf-8', errors='replace')
-            if result.returncode != 0:
+            # PowerShell 指令：建立 Inbound Block 規則
+            ps_command = f'''
+            New-NetFirewallRule -DisplayName "{rule_name}" `
+                -Direction Inbound `
+                -Action Block `
+                -Protocol {protocol.upper()} `
+                -LocalPort {port} `
+                -Profile Any `
+                -Enabled True
+            '''
+            result = subprocess.run(
+                ["powershell", "-Command", ps_command],
+                capture_output=True,
+                text=True,
+                encoding='utf-8',
+                errors='replace'
+            )
+            if result.returncode == 0:
+                logger.info(f"成功封鎖端口 {port} ({protocol})")
+                return True
+            else:
                 logger.error(f"無法封鎖端口 {port} ({protocol})：{result.stderr}")
                 return False
-            logger.info(f"成功封鎖端口 {port} ({protocol})")
-            return True
         except Exception as e:
             logger.error(f"封鎖端口 {port} ({protocol}) 時發生錯誤：{str(e)}")
             return False
 def unblock_port_local(port, protocol='TCP'):
-    """在本機使用 netsh 解除封鎖指定端口"""
+    """在本機使用 PowerShell 解除封鎖指定端口"""
     with lock:
         try:
             rule_name = f"IDS_Block_Port_{port}_{protocol}"
-            cmd = f'netsh advfirewall firewall delete rule name="{rule_name}"'
-            result = subprocess.run(cmd, shell=True, capture_output=True, text=True, encoding='utf-8', errors='replace')
-            if result.returncode != 0:
+            # PowerShell 指令：移除規則（支援萬用字元，以防有重複）
+            ps_command = f'''
+            Get-NetFirewallRule -DisplayName "{rule_name}*" | Remove-NetFirewallRule
+            '''
+            result = subprocess.run(
+                ["powershell", "-Command", ps_command],
+                capture_output=True,
+                text=True,
+                encoding='utf-8',
+                errors='replace'
+            )
+            if result.returncode == 0:
+                logger.info(f"成功解除封鎖端口 {port} ({protocol})")
+                return True
+            else:
                 logger.error(f"無法解除封鎖端口 {port} ({protocol})：{result.stderr}")
                 return False
-            logger.info(f"成功解除封鎖端口 {port} ({protocol})")
-            return True
         except Exception as e:
             logger.error(f"解除封鎖端口 {port} ({protocol}) 時發生錯誤：{str(e)}")
             return False
@@ -1630,52 +1656,40 @@ class IDSApp:
         ttk.Button(ports_frame, text="解除選中端口", command=self.unblock_selected_port).grid(row=2, column=0, padx=5, pady=5, sticky="ew")
         self.refresh_blocked_ports()
     def refresh_blocked_ports(self):
-        """刷新已封鎖端口列表，從防火牆規則中獲取"""
+        """刷新已封鎖端口列表，從防火牆規則中獲取（使用 PowerShell）"""
         for item in self.ports_tree.get_children():
             self.ports_tree.delete(item)
         try:
-            cmd = 'netsh advfirewall firewall show rule name=all'
-            result = subprocess.run(cmd, shell=True, capture_output=True, text=True, encoding='utf-8', errors='replace')
+            # PowerShell 指令：取得所有名稱包含 IDS_Block_Port_ 的 Inbound Block 規則
+            ps_command = '''
+            Get-NetFirewallRule -Direction Inbound -Action Block |
+                Where-Object {$_.DisplayName -like "IDS_Block_Port_*"} |
+                ForEach-Object {
+                    $portFilter = $_ | Get-NetFirewallPortFilter
+                    "$($_.DisplayName)`t$($portFilter.Protocol)`t$($portFilter.LocalPort)"
+                }
+            '''
+            result = subprocess.run(
+                ["powershell", "-Command", ps_command],
+                capture_output=True,
+                text=True,
+                encoding='utf-8',
+                errors='replace'
+            )
             if result.returncode == 0:
-                lines = result.stdout.splitlines()
-                current_rule_name = None
-                current_port = None
-                current_protocol = None
+                lines = result.stdout.strip().splitlines()
                 for line in lines:
-                    line = line.strip()
-                    if line.startswith('Rule Name:') or 'IDS_Block_Port_' in line:
-                        # 提取規則名稱
-                        if 'IDS_Block_Port_' in line:
-                            parts = line.split('IDS_Block_Port_')
-                            if len(parts) > 1:
-                                port_proto = parts[1].split()[0] if ' ' in parts[1] else parts[1]
-                                if '_' in port_proto:
-                                    port, protocol = port_proto.rsplit('_', 1)
-                                    current_rule_name = line
-                                    current_port = port
-                                    current_protocol = protocol
-                    elif line.startswith('Local Port:') or '本地端口:' in line:
-                        if current_rule_name:
-                            parts = line.split(':')
-                            if len(parts) > 1:
-                                ports_str = parts[1].strip().split(',')[0].strip()
-                                if '-' in ports_str:
-                                    # 範圍端口，僅顯示起始端口
-                                    current_port = ports_str.split('-')[0].strip()
-                                else:
-                                    current_port = ports_str
-                    elif line.startswith('Protocol:') or '協定:' in line:
-                        if current_rule_name and current_port:
-                            parts = line.split(':')
-                            if len(parts) > 1:
-                                protocol = parts[1].strip().split(',')[0].strip().upper()
-                                if protocol in ['TCP', 'UDP']:
-                                    current_protocol = protocol
-                                    # 插入到樹狀視圖
-                                    self.ports_tree.insert("", tk.END, values=(current_port, current_protocol))
-                                    current_rule_name = None
-                                    current_port = None
-                                    current_protocol = None
+                    if line.strip():
+                        parts = line.split('\t')
+                        if len(parts) >= 3:
+                            rule_name = parts[0]
+                            protocol = parts[1].upper()
+                            ports = parts[2]
+                            # 提取端口號（規則名稱最後的數字）
+                            import re
+                            match = re.search(r'IDS_Block_Port_(\d+)_', rule_name)
+                            port = match.group(1) if match else ports.split(',')[0]
+                            self.ports_tree.insert("", tk.END, values=(port, protocol))
             else:
                 self.log_message(f"無法獲取防火牆規則：{result.stderr}")
         except Exception as e:
